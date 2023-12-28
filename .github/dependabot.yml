@@ -8,7 +8,7 @@ updates:
     target-branch: main
     commit-message:
       prefix: "chore"
-      include_scope: true
+      include: "scope"
 
   - package-ecosystem: "docker"
     directory: "/"
@@ -18,7 +18,7 @@ updates:
     target-branch: main
     commit-message:
       prefix: "chore"
-      include_scope: true
+      include: "scope"
 
   - package-ecosystem: "gomod"
     directory: /
@@ -28,4 +28,4 @@ updates:
     target-branch: main
     commit-message:
       prefix: "chore"
-      include_scope: true
+      include: "scope"
