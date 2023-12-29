@@ -4,7 +4,7 @@ import (
 	"os"
 
 	_ "github.com/jackc/pgx/v5"
-	"github.com/kyamagames/auth/utils"
+	"github.com/kyamalabs/auth/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
