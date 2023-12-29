@@ -1,5 +1,3 @@
-run:
-  modules-download-mode: vendor
 issues:
   fix: true
 linters:
