@@ -2,9 +2,10 @@ package db
 
 import (
 	"context"
-	"log"
 	"os"
 	"testing"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/kyamagames/auth/utils"
 
@@ -16,12 +17,12 @@ var testStore Store
 func TestMain(m *testing.M) {
 	config, err := utils.LoadConfig("../../")
 	if err != nil {
-		log.Fatal("cannot load config: ", err)
+		log.Fatal().Err(err).Msg("could not load config")
 	}
 
 	connPool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
-		log.Fatal("cannot connect to the db: ", err)
+		log.Fatal().Err(err).Msg("could not connect to the db")
 	}
 
 	testStore = NewStore(connPool)

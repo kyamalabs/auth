@@ -1,15 +1,21 @@
 package main
 
 import (
-	"log"
+	"os"
 
 	_ "github.com/jackc/pgx/v5"
 	"github.com/kyamagames/auth/utils"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
-	_, err := utils.LoadConfig(".")
+	config, err := utils.LoadConfig(".")
 	if err != nil {
-		log.Fatal("cannot load config: ", err)
+		log.Fatal().Err(err).Msg("cannot load config")
+	}
+
+	if config.Environment == "development" {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 }
