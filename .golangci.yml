@@ -1,6 +1,7 @@
 issues:
   fix: true
 linters:
+  disable-all: true
   enable:
     - gofumpt
     - dupl
@@ -9,3 +10,9 @@ linters:
     - goimports
     - gosec
     - misspell
+run:
+  skip-dirs:
+    - .github/
+    - /docs
+    - /db/migration
+    - /db/query
