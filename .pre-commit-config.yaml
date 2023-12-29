@@ -10,6 +10,7 @@ repos:
     rev: v1.55.2
     hooks:
       - id: golangci-lint
+        entry: golangci-lint run --fix -v
 
 ci:
   autofix_commit_msg: |
