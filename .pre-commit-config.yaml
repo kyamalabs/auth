@@ -10,6 +10,10 @@ repos:
     rev: v1.55.0
     hooks:
       - id: golangci-lint-full
+        language: golang
+        types:
+          - go
+        require_serial: true
         language_version: '1.21.5'
 
 ci:
