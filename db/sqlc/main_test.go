@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/kyamalabs/auth/utils"
+	"github.com/kyamagames/auth/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
