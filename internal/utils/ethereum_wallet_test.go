@@ -27,9 +27,10 @@ func derivePublicKeyFromPrivateKey(privateKeyHex string) (string, error) {
 }
 
 func TestNewEthereumWallet(t *testing.T) {
-	testEthereumWallet := NewEthereumWallet()
-
+	testEthereumWallet, err := NewEthereumWallet()
+	require.NoError(t, err)
 	require.NotEmpty(t, testEthereumWallet)
+
 	require.Equal(t, strings.ToLower(testEthereumWallet.PublicKeyHash), strings.ToLower(testEthereumWallet.Address))
 
 	derivedPublicKey, err := derivePublicKeyFromPrivateKey(testEthereumWallet.PrivateKey)
