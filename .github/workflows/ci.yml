@@ -43,7 +43,7 @@ jobs:
         run: make migrate_up
 
       - name: Run tests and collect coverage
-        run: make test TAGS=ci
+        run: make test SHORT=false
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

@@ -5,8 +5,10 @@ DATABASE_NAME = auth
 POSTGRES_VERSION = 16
 DATABASE_URL = "postgresql://$(DB_USER):$(DB_PASS)@localhost:$(DB_PORT)/$(DATABASE_NAME)?sslmode=disable"
 
+SHORT = true
+
 test:
-	go test -v -race -cover -coverprofile=coverage.out -covermode=atomic -tags=$(TAGS) ./...
+	go test -v -race -cover -coverprofile=coverage.out -covermode=atomic -short=$(SHORT) ./...
 
 db_docs:
 	dbdocs build docs/db.dbml
