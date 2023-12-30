@@ -1,5 +1,3 @@
-issues:
-  fix: true
 linters:
   enable:
     - gofumpt

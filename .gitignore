@@ -1,2 +1,4 @@
 .idea/
 *.out
+
+dbml-error.log
