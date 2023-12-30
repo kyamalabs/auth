@@ -7,14 +7,26 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyamagames/auth/internal/token"
+
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
 func createTestSession(t *testing.T) Session {
-	account := createTestAccount(t)
+	wallet, account := createTestAccount(t)
+	require.NotEmpty(t, wallet)
 	require.NotEmpty(t, account)
+
+	maker, err := token.NewPasetoMaker(gofakeit.LetterN(32))
+	require.NoError(t, err)
+	require.NotEmpty(t, maker)
+
+	refreshToken, payload, err := maker.CreateToken(wallet.Address, token.Gamer, 1*time.Hour)
+	require.NoError(t, err)
+	require.NotEmpty(t, payload)
+	require.NotEmpty(t, refreshToken)
 
 	randomNum, err := rand.Int(rand.Reader, big.NewInt(2))
 	require.NoError(t, err)
@@ -28,11 +40,10 @@ func createTestSession(t *testing.T) Session {
 	params := CreateSessionParams{
 		ID:            uuid.New(),
 		WalletAddress: account.Owner,
-		// TODO: Set to actual token
-		RefreshToken: uuid.New().String(),
-		UserAgent:    gofakeit.UserAgent(),
-		ClientIp:     clientIP,
-		ExpiresAt:    time.Now().UTC().Add(3 * time.Hour),
+		RefreshToken:  refreshToken,
+		UserAgent:     gofakeit.UserAgent(),
+		ClientIp:      clientIP,
+		ExpiresAt:     time.Now().UTC().Add(3 * time.Hour),
 	}
 
 	session, err := testStore.CreateSession(context.Background(), params)

@@ -2,8 +2,7 @@ package utils
 
 import (
 	"crypto/ecdsa"
-
-	"github.com/rs/zerolog/log"
+	"errors"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -17,11 +16,13 @@ type EthereumWallet struct {
 	PublicKeyHash string `json:"hash"`
 }
 
-func NewEthereumWallet() (ethereumWallet EthereumWallet) {
+func NewEthereumWallet() (*EthereumWallet, error) {
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
-		log.Fatal().Err(err).Msg("could not generate private key")
+		return nil, err
 	}
+
+	ethereumWallet := &EthereumWallet{}
 
 	privateKeyBytes := crypto.FromECDSA(privateKey)
 	ethereumWallet.PrivateKey = hexutil.Encode(privateKeyBytes)[2:]
@@ -29,7 +30,7 @@ func NewEthereumWallet() (ethereumWallet EthereumWallet) {
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		log.Fatal().Msg("error casting public key to ECDSA")
+		return nil, errors.New("error casting public key to ECDSA")
 	}
 
 	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
@@ -41,5 +42,5 @@ func NewEthereumWallet() (ethereumWallet EthereumWallet) {
 	hash.Write(publicKeyBytes[1:])
 	ethereumWallet.PublicKeyHash = hexutil.Encode(hash.Sum(nil)[12:])
 
-	return
+	return ethereumWallet, nil
 }

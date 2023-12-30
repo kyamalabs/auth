@@ -9,8 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createTestAccount(t *testing.T) Account {
-	testEthWallet := utils.NewEthereumWallet()
+func createTestAccount(t *testing.T) (*utils.EthereumWallet, Account) {
+	testEthWallet, err := utils.NewEthereumWallet()
+	require.NoError(t, err)
+	require.NotEmpty(t, testEthWallet)
 
 	account, err := testStore.CreateAccount(context.Background(), testEthWallet.Address)
 	require.NoError(t, err)
@@ -18,7 +20,7 @@ func createTestAccount(t *testing.T) Account {
 
 	require.Equal(t, testEthWallet.Address, account.Owner)
 
-	return account
+	return testEthWallet, account
 }
 
 func TestCreateAccount(t *testing.T) {
@@ -26,7 +28,8 @@ func TestCreateAccount(t *testing.T) {
 		t.Skip("skipping test to maintain db state")
 	}
 
-	account := createTestAccount(t)
+	wallet, account := createTestAccount(t)
+	require.NotEmpty(t, wallet)
 	require.NotEmpty(t, account)
 
 	require.NotZero(t, account.ID)
