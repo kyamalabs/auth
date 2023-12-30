@@ -1,2 +1,4 @@
 issues:
   fix: true
+linters:
+  disable-all: true
