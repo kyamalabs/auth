@@ -1,19 +1,2 @@
 issues:
   fix: true
-linters:
-  disable-all: true
-  enable:
-    - gofumpt
-    - dupl
-    - goconst
-    - gocritic
-    - goimports
-    - gosec
-    - misspell
-run:
-  skip-dirs:
-    - .github/
-    - /docs
-    - /db/migration
-    - /db/query
-  go: '1.19'

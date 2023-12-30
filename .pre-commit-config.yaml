@@ -10,10 +10,6 @@ repos:
     rev: v1.55.0
     hooks:
       - id: golangci-lint-full
-        language: golang
-        types:
-          - go
-        require_serial: true
 
 ci:
   autofix_commit_msg: |
