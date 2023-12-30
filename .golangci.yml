@@ -1,7 +1,6 @@
-issues:
-  fix: true
 linters:
   enable:
+    - gofumpt
     - gofmt
     - dupl
     - goconst
