@@ -1,7 +1,6 @@
 linters:
   enable:
     - gofumpt
-    - gofmt
     - dupl
     - goconst
     - gocritic
