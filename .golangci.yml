@@ -16,3 +16,4 @@ run:
     - /docs
     - /db/migration
     - /db/query
+  go: '1.19'
