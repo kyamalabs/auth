@@ -1,4 +1,11 @@
 issues:
   fix: true
 linters:
-  disable-all: true
+  enable:
+    - gofumpt
+    - dupl
+    - goconst
+    - gocritic
+    - goimports
+    - gosec
+    - misspell
