@@ -5,9 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/kyamagames/auth/internal/utils"
 	"github.com/rs/zerolog/log"
-
-	"github.com/kyamagames/auth/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -15,7 +14,7 @@ import (
 var testStore Store
 
 func TestMain(m *testing.M) {
-	config, err := utils.LoadConfig("../../")
+	config, err := utils.LoadConfig("../../../")
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not load config")
 	}
