@@ -26,20 +26,20 @@ drop_db:
 	docker exec -it postgres$(POSTGRES_VERSION) dropdb $(DATABASE_NAME)
 
 migrate_create:
-	migrate create -ext sql -dir db/migration -seq $(name)
+	migrate create -ext sql -dir internal/db/migration -seq $(name)
 
 migrate_up:
 ifdef N
-	migrate -path db/migration -database $(DATABASE_URL) -verbose up $(N)
+	migrate -path internal/db/migration -database $(DATABASE_URL) -verbose up $(N)
 else
-	migrate -path db/migration -database $(DATABASE_URL) -verbose up
+	migrate -path internal/db/migration -database $(DATABASE_URL) -verbose up
 endif
 
 migrate_down:
 ifdef N
-	migrate -path db/migration -database $(DATABASE_URL) -verbose down $(N)
+	migrate -path internal/db/migration -database $(DATABASE_URL) -verbose down $(N)
 else
-	migrate -path db/migration -database $(DATABASE_URL) -verbose down
+	migrate -path internal/db/migration -database $(DATABASE_URL) -verbose down
 endif
 
 sqlc:

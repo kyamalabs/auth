@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyamagames/auth/utils"
+	"github.com/kyamagames/auth/internal/utils"
 
 	"github.com/stretchr/testify/require"
 )

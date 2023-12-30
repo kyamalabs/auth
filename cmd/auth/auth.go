@@ -3,8 +3,9 @@ package main
 import (
 	"os"
 
+	"github.com/kyamagames/auth/internal/utils"
+
 	_ "github.com/jackc/pgx/v5"
-	"github.com/kyamagames/auth/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
