@@ -105,8 +105,8 @@ func IsEthereumSignatureValid(walletAddressHex string, message string, signature
 	recoveredWalletAddressBytes := common.BytesToAddress(recoveredWalletAddress.Bytes())
 
 	if recoveredWalletAddressBytes != walletAddress {
-		return false, fmt.Errorf("signature verification failed: address mismatch: %s/%s",
-			walletAddress, recoveredWalletAddress)
+		return false, fmt.Errorf("signature verification failed: address mismatch: "+
+			"initial: %s recovered: %s", walletAddress, recoveredWalletAddress)
 	}
 
 	return true, nil
