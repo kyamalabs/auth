@@ -134,7 +134,7 @@ func TestIsEthereumSignatureValid(t *testing.T) {
 				require.NoError(t, err)
 				require.NotEmpty(t, wallet)
 
-				return wallet.Address
+				return fmt.Sprintf("%sz", wallet.Address[:len(wallet.Address)-1])
 			},
 			generateMessageAndSignature: func() (string, string) {
 				message := gofakeit.Phrase()
@@ -143,7 +143,7 @@ func TestIsEthereumSignatureValid(t *testing.T) {
 				require.NoError(t, err)
 				require.NotEmpty(t, signature)
 
-				return message, signature[:len(signature)-1]
+				return message, signature
 			},
 			isSignatureValid: false,
 		},
