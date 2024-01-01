@@ -108,7 +108,7 @@ func TestPasetoMaker_VerifyToken(t *testing.T) {
 			require.Equal(t, wallet.Address, payload.WalletAddress)
 			require.Equal(t, Gamer, payload.Role)
 			require.WithinDuration(t, time.Now().UTC(), payload.IssuedAt, time.Second)
-			require.WithinDuration(t, time.Now().UTC().Add(duration), payload.ExpiredAt, time.Second)
+			require.WithinDuration(t, time.Now().UTC().Add(duration), payload.ExpiresAt, time.Second)
 		})
 	}
 }

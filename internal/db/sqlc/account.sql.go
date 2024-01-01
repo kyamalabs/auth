@@ -14,12 +14,34 @@ INSERT INTO accounts (
     owner
 ) VALUES (
     $1
-) RETURNING id, owner, created_at
+) RETURNING id, owner, role, created_at
 `
 
 func (q *Queries) CreateAccount(ctx context.Context, owner string) (Account, error) {
 	row := q.db.QueryRow(ctx, createAccount, owner)
 	var i Account
-	err := row.Scan(&i.ID, &i.Owner, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Owner,
+		&i.Role,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getAccountByOwner = `-- name: GetAccountByOwner :one
+SELECT id, owner, role, created_at FROM accounts
+WHERE owner = $1 LIMIT 1
+`
+
+func (q *Queries) GetAccountByOwner(ctx context.Context, owner string) (Account, error) {
+	row := q.db.QueryRow(ctx, getAccountByOwner, owner)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.Owner,
+		&i.Role,
+		&i.CreatedAt,
+	)
 	return i, err
 }

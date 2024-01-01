@@ -5,9 +5,15 @@ Project auth_service {
   '''
 }
 
+enum role {
+    admin
+    gamer
+}
+
 Table accounts {
   id UUID [default: `gen_random_uuid()`, pk]
   owner varchar [unique, not null]
+  role role [not null, default: 'gamer']
   created_at timestamptz [not null, default: `now()`]
 
   Indexes {
@@ -17,7 +23,7 @@ Table accounts {
 
 Table sessions {
   id UUID [pk]
-  wallet_address varchar [unique, not null, ref: > accounts.owner]
+  wallet_address varchar [not null, ref: > accounts.owner]
   refresh_token varchar [unique, not null]
   user_agent varchar [not null]
   client_ip varchar [not null]

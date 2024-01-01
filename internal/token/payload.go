@@ -20,7 +20,7 @@ type Payload struct {
 	WalletAddress string    `json:"wallet_address"`
 	Role          Role      `json:"role"`
 	IssuedAt      time.Time `json:"issued_at"`
-	ExpiredAt     time.Time `json:"expired_at"`
+	ExpiresAt     time.Time `json:"expires_at"`
 }
 
 func NewPayload(walletAddress string, role Role, duration time.Duration) (*Payload, error) {
@@ -34,14 +34,14 @@ func NewPayload(walletAddress string, role Role, duration time.Duration) (*Paylo
 		WalletAddress: walletAddress,
 		Role:          role,
 		IssuedAt:      time.Now().UTC(),
-		ExpiredAt:     time.Now().UTC().Add(duration),
+		ExpiresAt:     time.Now().UTC().Add(duration),
 	}
 
 	return payload, nil
 }
 
 func (payload *Payload) Valid() error {
-	if time.Now().UTC().After(payload.ExpiredAt) {
+	if time.Now().UTC().After(payload.ExpiresAt) {
 		return ErrExpiredToken
 	}
 

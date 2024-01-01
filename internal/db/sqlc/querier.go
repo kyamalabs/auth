@@ -13,6 +13,7 @@ import (
 type Querier interface {
 	CreateAccount(ctx context.Context, owner string) (Account, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
+	GetAccountByOwner(ctx context.Context, owner string) (Account, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 }
 

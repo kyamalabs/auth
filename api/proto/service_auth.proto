@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/api/annotations.proto";
+import "rpc_authenticate_account.proto";
+
+option go_package = "github.com/kyamagames/auth/pb";
+
+service Auth {
+  rpc AuthenticateAccount(AuthenticateAccountRequest) returns (AuthenticateAccountResponse) {
+    option (google.api.http) = {
+      post: "/auth/accounts/authenticate"
+      body: "*"
+    };
+  }
+}
