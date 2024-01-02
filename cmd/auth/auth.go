@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/kyamagames/auth/internal/api/server"
+
 	"github.com/rakyll/statik/fs"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -17,7 +19,6 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kyamagames/auth/api/pb"
-	"github.com/kyamagames/auth/api/server"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/utils"
 	"github.com/rs/zerolog"

@@ -1,4 +1,4 @@
-package server
+package handler
 
 import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
