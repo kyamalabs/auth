@@ -4,14 +4,31 @@ package pb;
 
 import "google/api/annotations.proto";
 import "rpc_authenticate_account.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/kyamagames/auth/pb";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Auth Service";
+    version: "0";
+    contact: {
+      name: "Kyama Games";
+      url: "https://kyamagames.com";
+    };
+  };
+};
 
 service Auth {
   rpc AuthenticateAccount(AuthenticateAccountRequest) returns (AuthenticateAccountResponse) {
     option (google.api.http) = {
       post: "/auth/accounts/authenticate"
       body: "*"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Authenticate an account using its wallet address, a server generated challenge, and a signature.";
+      summary: "Authenticate Account";
     };
   }
 }
