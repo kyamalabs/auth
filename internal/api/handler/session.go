@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kyamagames/auth/internal/api/middleware"
+
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
 	"github.com/kyamagames/auth/internal/utils"
@@ -30,7 +32,7 @@ func NewSession(ctx context.Context, accountOwner string, config utils.Config, t
 		return nil, fmt.Errorf("could not create refresh token token: %w", err)
 	}
 
-	metadata := extractMetadata(ctx)
+	metadata := middleware.ExtractMetadata(ctx)
 
 	session, err := store.CreateSession(ctx, db.CreateSessionParams{
 		ID:            refreshTokenPayload.ID,

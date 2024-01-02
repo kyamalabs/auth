@@ -1,4 +1,4 @@
-package handler
+package middleware
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type Metadata struct {
 	ClientIP  string `json:"client_ip"`
 }
 
-func extractMetadata(ctx context.Context) *Metadata {
+func ExtractMetadata(ctx context.Context) *Metadata {
 	mtdt := &Metadata{}
 
 	md, ok := metadata.FromIncomingContext(ctx)

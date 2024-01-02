@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/kyamagames/auth/internal/api/middleware"
+
 	"github.com/kyamagames/auth/internal/api/server"
 
 	"github.com/rakyll/statik/fs"
@@ -81,7 +83,8 @@ func runGrpcServer(config utils.Config, store db.Store) {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcLogger := grpc.UnaryInterceptor(middleware.GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger)
 	pb.RegisterAuthServer(grpcServer, s)
 	reflection.Register(grpcServer)
 
@@ -132,8 +135,10 @@ func runGatewayServer(config utils.Config, store db.Store) {
 	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statikFS))
 	mux.Handle("/swagger/", swaggerHandler)
 
+	handler := middleware.HTTPLogger(mux)
+
 	srv := &http.Server{
-		Handler:      mux,
+		Handler:      handler,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
