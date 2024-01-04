@@ -3,6 +3,8 @@ package handler
 import (
 	"testing"
 
+	"github.com/kyamagames/auth/internal/cache"
+
 	"github.com/brianvoe/gofakeit/v6"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
@@ -10,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newTestHandler(t *testing.T, store db.Store) Handler {
+func newTestHandler(t *testing.T, store db.Store, cache cache.Cache) Handler {
 	config := utils.Config{
 		TokenSymmetricKey: gofakeit.LetterN(32),
 	}
@@ -19,5 +21,5 @@ func newTestHandler(t *testing.T, store db.Store) Handler {
 	require.NoError(t, err)
 	require.NotEmpty(t, tokenMaker)
 
-	return NewHandler(config, store, tokenMaker)
+	return NewHandler(config, store, tokenMaker, cache)
 }

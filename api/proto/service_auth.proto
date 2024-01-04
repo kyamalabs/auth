@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package pb;
 
+import "rpc_get_challenge.proto";
 import "google/api/annotations.proto";
 import "rpc_authenticate_account.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -20,6 +21,17 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 };
 
 service Auth {
+  rpc GetChallenge(GetChallengeRequest) returns (GetChallengeResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/challenge"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Get an authentication challenge to be used to authenticate the specified wallet address";
+      summary: "Get Account Authentication Challenge";
+    };
+  }
+
   rpc AuthenticateAccount(AuthenticateAccountRequest) returns (AuthenticateAccountResponse) {
     option (google.api.http) = {
       post: "/auth/accounts/authenticate"

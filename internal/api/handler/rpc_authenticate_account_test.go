@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	mockcache "github.com/kyamagames/auth/internal/cache/mock"
+
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 
@@ -106,7 +108,7 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 				require.NoError(t, err)
 				require.NotEmpty(t, res)
 
-				require.Equal(t, authenticateAccountReqParams.WalletAddress, res.GetAccount().GetOwner())
+				require.Equal(t, authenticateAccountReqParams.GetWalletAddress(), res.GetAccount().GetOwner())
 				require.Equal(t, "bearer", strings.ToLower(res.GetSession().GetTokenType()))
 			},
 		},
@@ -228,12 +230,15 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
-			storeCtrl := gomock.NewController(t)
-			defer storeCtrl.Finish()
-			store := mockdb.NewMockStore(storeCtrl)
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			cache := mockcache.NewMockCache(ctrl)
 
 			tc.buildStubs(store)
-			handler := newTestHandler(t, store)
+
+			handler := newTestHandler(t, store, cache)
 
 			res, err := handler.AuthenticateAccount(context.Background(), tc.req)
 			tc.checkResponse(t, res, err)

@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	Auth_GetChallenge_FullMethodName        = "/pb.Auth/GetChallenge"
 	Auth_AuthenticateAccount_FullMethodName = "/pb.Auth/AuthenticateAccount"
 )
 
@@ -26,6 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
+	GetChallenge(ctx context.Context, in *GetChallengeRequest, opts ...grpc.CallOption) (*GetChallengeResponse, error)
 	AuthenticateAccount(ctx context.Context, in *AuthenticateAccountRequest, opts ...grpc.CallOption) (*AuthenticateAccountResponse, error)
 }
 
@@ -35,6 +37,15 @@ type authClient struct {
 
 func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
+}
+
+func (c *authClient) GetChallenge(ctx context.Context, in *GetChallengeRequest, opts ...grpc.CallOption) (*GetChallengeResponse, error) {
+	out := new(GetChallengeResponse)
+	err := c.cc.Invoke(ctx, Auth_GetChallenge_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *authClient) AuthenticateAccount(ctx context.Context, in *AuthenticateAccountRequest, opts ...grpc.CallOption) (*AuthenticateAccountResponse, error) {
@@ -50,6 +61,7 @@ func (c *authClient) AuthenticateAccount(ctx context.Context, in *AuthenticateAc
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
 type AuthServer interface {
+	GetChallenge(context.Context, *GetChallengeRequest) (*GetChallengeResponse, error)
 	AuthenticateAccount(context.Context, *AuthenticateAccountRequest) (*AuthenticateAccountResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
@@ -58,6 +70,9 @@ type AuthServer interface {
 type UnimplementedAuthServer struct {
 }
 
+func (UnimplementedAuthServer) GetChallenge(context.Context, *GetChallengeRequest) (*GetChallengeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChallenge not implemented")
+}
 func (UnimplementedAuthServer) AuthenticateAccount(context.Context, *AuthenticateAccountRequest) (*AuthenticateAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthenticateAccount not implemented")
 }
@@ -72,6 +87,24 @@ type UnsafeAuthServer interface {
 
 func RegisterAuthServer(s grpc.ServiceRegistrar, srv AuthServer) {
 	s.RegisterService(&Auth_ServiceDesc, srv)
+}
+
+func _Auth_GetChallenge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChallengeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).GetChallenge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_GetChallenge_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).GetChallenge(ctx, req.(*GetChallengeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_AuthenticateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -99,6 +132,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.Auth",
 	HandlerType: (*AuthServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetChallenge",
+			Handler:    _Auth_GetChallenge_Handler,
+		},
 		{
 			MethodName: "AuthenticateAccount",
 			Handler:    _Auth_AuthenticateAccount_Handler,

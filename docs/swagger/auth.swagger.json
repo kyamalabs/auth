@@ -53,6 +53,38 @@
           "Auth"
         ]
       }
+    },
+    "/auth/accounts/challenge": {
+      "get": {
+        "summary": "Get Account Authentication Challenge",
+        "description": "Get an authentication challenge to be used to authenticate the specified wallet address",
+        "operationId": "Auth_GetChallenge",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetChallengeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
     }
   },
   "definitions": {
@@ -93,6 +125,14 @@
         },
         "session": {
           "$ref": "#/definitions/pbSession"
+        }
+      }
+    },
+    "pbGetChallengeResponse": {
+      "type": "object",
+      "properties": {
+        "challenge": {
+          "type": "string"
         }
       }
     },

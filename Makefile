@@ -4,6 +4,7 @@ DB_PASS = password
 DATABASE_NAME = auth
 POSTGRES_VERSION = 16
 DATABASE_URL = "postgresql://$(DB_USER):$(DB_PASS)@localhost:$(DB_PORT)/$(DATABASE_NAME)?sslmode=disable"
+REDIS_VERSION = 7
 
 SHORT = true
 
@@ -44,6 +45,7 @@ endif
 
 mock:
 	mockgen -package=mockdb -destination=internal/db/mock/store.go github.com/kyamagames/auth/internal/db/sqlc Store
+	mockgen -package=mockcache -destination=internal/cache/mock/cache.go github.com/kyamagames/auth/internal/cache Cache
 
 sqlc:
 	sqlc generate
@@ -66,4 +68,7 @@ server:
 evans:
 	evans --host localhost --port 50051 -r repl
 
-.PHONY: test db_docs db_schema postgres create_db drop_db migrate_create migrate_up migrate_down sqlc mock proto server evans
+redis:
+	docker run --name redis -p 6379:6379 -d redis:$(REDIS_VERSION)-alpine
+
+.PHONY: test db_docs db_schema postgres create_db drop_db migrate_create migrate_up migrate_down sqlc mock proto server evans, redis
