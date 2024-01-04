@@ -8,12 +8,13 @@ import (
 	"testing"
 	"time"
 
-	mockcache "github.com/kyamagames/auth/internal/cache/mock"
-
+	"github.com/brianvoe/gofakeit/v6"
+	"github.com/kyamagames/auth/internal/challenge"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 
-	"github.com/brianvoe/gofakeit/v6"
+	mockcache "github.com/kyamagames/auth/internal/cache/mock"
+
 	"github.com/google/uuid"
 	"github.com/kyamagames/auth/api/pb"
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
@@ -54,7 +55,18 @@ func generateTestAuthenticateAccountReqParams(t *testing.T) *pb.AuthenticateAcco
 	require.NoError(t, err)
 	require.NotEmpty(t, wallet)
 
-	authChallenge := gofakeit.Phrase()
+	crtl := gomock.NewController(t)
+	defer crtl.Finish()
+
+	cache := mockcache.NewMockCache(crtl)
+
+	cache.EXPECT().
+		Set(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(1).
+		Return(nil)
+
+	authChallenge, err := challenge.GenerateChallenge(context.Background(), cache, wallet.Address)
+	require.NoError(t, err)
 
 	signature, err := utils.SignMessageEthereum(wallet.PrivateKey, authChallenge)
 	require.NoError(t, err)
@@ -74,13 +86,18 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 	testCases := []struct {
 		name          string
 		req           *pb.AuthenticateAccountRequest
-		buildStubs    func(store *mockdb.MockStore)
+		buildStubs    func(store *mockdb.MockStore, cache *mockcache.MockCache)
 		checkResponse func(t *testing.T, res *pb.AuthenticateAccountResponse, err error)
 	}{
 		{
 			name: "Success",
 			req:  authenticateAccountReqParams,
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
 					Times(1).
@@ -100,6 +117,7 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					CreateSession(gomock.Any(), EqCreateSessionParams(db.CreateSessionParams{
 						WalletAddress: authenticateAccountReqParams.WalletAddress,
 					})).
+					Times(1).
 					Return(db.Session{
 						ID: uuid.New(),
 					}, nil)
@@ -116,17 +134,17 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 			name: "Failure - invalid request arguments",
 			req: &pb.AuthenticateAccountRequest{
 				WalletAddress: "0x0000000000000000000000000000000000000000",
-				Challenge:     authenticateAccountReqParams.GetChallenge(),
+				Challenge:     gofakeit.Phrase(),
 				Signature:     "invalid_signature",
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, _ *mockcache.MockCache) {
 			},
 			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
 				require.Error(t, err)
 				require.Empty(t, res)
 
 				var violations []string
-				expectedFieldViolations := []string{"wallet_address", "signature"}
+				expectedFieldViolations := []string{"wallet_address", "challenge", "signature"}
 
 				st, ok := status.FromError(err)
 				require.True(t, ok)
@@ -144,13 +162,62 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 			},
 		},
 		{
+			name: "Failure - could not get cached challenge",
+			req:  authenticateAccountReqParams,
+			buildStubs: func(_ *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return("", errors.New("some cache error"))
+			},
+			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
+				require.Empty(t, res)
+				require.Error(t, err)
+				require.ErrorContains(t, err, InvalidChallengeError)
+			},
+		},
+		{
+			name: "Failure - cached challenge is empty",
+			req:  authenticateAccountReqParams,
+			buildStubs: func(_ *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return("", nil)
+			},
+			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
+				require.Empty(t, res)
+				require.Error(t, err)
+				require.ErrorContains(t, err, InvalidChallengeError)
+			},
+		},
+		{
+			name: "Failure - cached challenge does not match request challenge",
+			req:  authenticateAccountReqParams,
+			buildStubs: func(_ *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return("Kyama Games: Pixie-bob: 6859", nil)
+			},
+			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
+				require.Empty(t, res)
+				require.Error(t, err)
+				require.ErrorContains(t, err, InvalidChallengeError)
+			},
+		},
+		{
 			name: "Failure - invalid signature",
 			req: &pb.AuthenticateAccountRequest{
 				WalletAddress: authenticateAccountReqParams.GetWalletAddress(),
 				Challenge:     authenticateAccountReqParams.GetChallenge(),
 				Signature:     fmt.Sprintf("%sz", authenticateAccountReqParams.GetSignature()[:len(authenticateAccountReqParams.GetSignature())-1]),
 			},
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(authenticateAccountReqParams.GetChallenge(), nil)
 			},
 			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
 				require.Empty(t, res)
@@ -161,7 +228,12 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 		{
 			name: "Failure - could not get account by owner",
 			req:  authenticateAccountReqParams,
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
 					Times(1).
@@ -176,7 +248,12 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 		{
 			name: "Failure - could not create new account",
 			req:  authenticateAccountReqParams,
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
 					Times(1).
@@ -196,7 +273,12 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 		{
 			name: "Failure - could not create new db session",
 			req:  authenticateAccountReqParams,
-			buildStubs: func(store *mockdb.MockStore) {
+			buildStubs: func(store *mockdb.MockStore, cache *mockcache.MockCache) {
+				cache.EXPECT().
+					Get(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
 					Times(1).
@@ -236,7 +318,7 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			cache := mockcache.NewMockCache(ctrl)
 
-			tc.buildStubs(store)
+			tc.buildStubs(store, cache)
 
 			handler := newTestHandler(t, store, cache)
 

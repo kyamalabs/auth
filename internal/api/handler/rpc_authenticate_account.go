@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/kyamagames/auth/internal/challenge"
 	"github.com/kyamagames/auth/internal/validator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
@@ -21,6 +22,20 @@ func (h *Handler) AuthenticateAccount(ctx context.Context, req *pb.AuthenticateA
 	violations := validateAuthenticateAccountRequest(req)
 	if violations != nil {
 		return nil, invalidArgumentError(violations)
+	}
+
+	cachedChallenge, err := challenge.FetchChallenge(ctx, h.cache, req.GetWalletAddress())
+	if err != nil || cachedChallenge == "" {
+		logger.Error().Err(err).Msg("could not fetch cached challenge")
+		return nil, status.Error(codes.InvalidArgument, InvalidChallengeError)
+	}
+
+	if req.GetChallenge() != cachedChallenge {
+		logger.Error().
+			Str("request_challenge", req.GetChallenge()).
+			Str("cached_challenge", cachedChallenge).
+			Msg("request challenge did not match cached challenge")
+		return nil, status.Error(codes.InvalidArgument, InvalidChallengeError)
 	}
 
 	isSignatureValid, err := utils.IsEthereumSignatureValid(req.GetWalletAddress(), req.GetChallenge(), req.GetSignature())
@@ -75,7 +90,7 @@ func validateAuthenticateAccountRequest(req *pb.AuthenticateAccountRequest) (vio
 		violations = append(violations, fieldViolation("wallet_address", err))
 	}
 
-	if err := validator.ValidateServerGeneratedChallenge(req.GetChallenge(), ""); err != nil {
+	if err := challenge.ValidateChallenge(req.GetChallenge()); err != nil {
 		violations = append(violations, fieldViolation("challenge", err))
 	}
 

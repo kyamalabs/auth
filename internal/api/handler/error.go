@@ -9,6 +9,7 @@ import (
 const (
 	InternalServerError        string = "An unexpected error occurred while processing your request."
 	SignatureVerificationError string = "Signature verification failed. Please try again."
+	InvalidChallengeError      string = "Challenge is invalid. Please try again."
 )
 
 func fieldViolation(field string, err error) *errdetails.BadRequest_FieldViolation {
