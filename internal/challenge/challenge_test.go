@@ -150,7 +150,7 @@ func TestValidateChallenge(t *testing.T) {
 	}{
 		{
 			name:        "Success",
-			challenge:   "Kyama Games: Rottweiler: 6125",
+			challenge:   "Kyama Games: Authentication Challenge: Rottweiler: 6125",
 			expectedErr: nil,
 		},
 		{

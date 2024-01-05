@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	prefix         = "Kyama Games"
-	pattern        = "(.+): (.+): (\\d{4})"
+	prefix         = "Kyama Games: Authentication Challenge"
+	pattern        = "(.+): (.+): (.+): (\\d{4})"
 	suffixLen      = 4
 	expiration     = 1 * time.Hour
 	cacheKeyPrefix = "x-challenge"
