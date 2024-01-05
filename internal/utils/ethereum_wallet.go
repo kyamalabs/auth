@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/rs/zerolog/log"
-
+	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"golang.org/x/crypto/sha3"
@@ -57,8 +55,8 @@ func SignMessageEthereum(privateKeyHex string, message string) (string, error) {
 		return "", fmt.Errorf("could not parse secp256k1 private key: %w", err)
 	}
 
-	data := []byte(message)
-	hash := crypto.Keccak256Hash(data)
+	messageWithPrefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%s%s", fmt.Sprint(len(message)), message)
+	hash := crypto.Keccak256Hash([]byte(messageWithPrefix))
 
 	signature, err := crypto.Sign(hash.Bytes(), privateKey)
 	if err != nil {
@@ -71,42 +69,38 @@ func SignMessageEthereum(privateKeyHex string, message string) (string, error) {
 }
 
 func IsEthereumSignatureValid(walletAddressHex string, message string, signature string) (bool, error) {
-	log.Info().
-		Str("wallet_address", walletAddressHex).
-		Str("message", message).
-		Str("signature", signature).
-		Msg("attempting to verify ethereum message signature")
-
 	if !strings.HasPrefix(walletAddressHex, "0x") {
 		walletAddressHex = fmt.Sprintf("0x%s", walletAddressHex)
 	}
 
-	signature = strings.TrimPrefix(signature, "0x")
-	if len(signature) != 130 {
-		return false, fmt.Errorf("invalid signature length %d", len(signature))
+	if !strings.HasPrefix(signature, "0x") {
+		signature = fmt.Sprintf("0x%s", signature)
 	}
 
-	walletAddress := common.HexToAddress(walletAddressHex)
-	messageBytes := []byte(message)
+	if len(signature) != 132 {
+		return false, fmt.Errorf("invalid signature length: %d", len(signature))
+	}
 
-	signatureBytes, err := hex.DecodeString(signature)
+	signatureBytes, err := hexutil.Decode(signature)
 	if err != nil {
 		return false, fmt.Errorf("could not decode signature: %w", err)
 	}
 
-	messageHash := crypto.Keccak256(messageBytes)
+	messageHash := accounts.TextHash([]byte(message))
+	if signatureBytes[crypto.RecoveryIDOffset] == 27 || signatureBytes[crypto.RecoveryIDOffset] == 28 {
+		signatureBytes[crypto.RecoveryIDOffset] -= 27
+	}
 
-	sigPublicKey, err := crypto.SigToPub(messageHash, signatureBytes)
+	recoveredPublicKey, err := crypto.SigToPub(messageHash, signatureBytes)
 	if err != nil {
 		return false, fmt.Errorf("could not recover public key: %w", err)
 	}
 
-	recoveredWalletAddress := crypto.PubkeyToAddress(*sigPublicKey)
-	recoveredWalletAddressBytes := common.BytesToAddress(recoveredWalletAddress.Bytes())
+	recoveredWalletAddress := crypto.PubkeyToAddress(*recoveredPublicKey)
 
-	if recoveredWalletAddressBytes != walletAddress {
+	if !strings.EqualFold(walletAddressHex, recoveredWalletAddress.Hex()) {
 		return false, fmt.Errorf("signature verification failed: address mismatch: "+
-			"initial: %s recovered: %s", walletAddress, recoveredWalletAddress)
+			"initial: %s recovered: %s", walletAddressHex, recoveredWalletAddress)
 	}
 
 	return true, nil
