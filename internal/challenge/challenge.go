@@ -19,7 +19,7 @@ const (
 	pattern        = "(.+): (.+): (.+): (\\d{4})"
 	suffixLen      = 4
 	expiration     = 1 * time.Hour
-	cacheKeyPrefix = "x-challenge"
+	cacheKeyPrefix = "auth-challenge"
 )
 
 var InvalidChallengeError = errors.New("invalid challenge")
