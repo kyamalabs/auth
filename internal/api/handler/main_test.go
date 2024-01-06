@@ -53,10 +53,13 @@ func checkInvalidRequestParams(t *testing.T, err error, expectedFieldViolations 
 
 	st, ok := status.FromError(err)
 	require.True(t, ok)
+
 	details := st.Details()
+
 	for _, detail := range details {
 		br, ok := detail.(*errdetails.BadRequest)
 		require.True(t, ok)
+
 		fieldViolations := br.FieldViolations
 		for _, violation := range fieldViolations {
 			violations = append(violations, violation.Field)
