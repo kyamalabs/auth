@@ -1,7 +1,13 @@
 package handler
 
 import (
+	"context"
+	"fmt"
 	"testing"
+	"time"
+
+	"github.com/kyamagames/auth/internal/api/middleware"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/kyamagames/auth/internal/cache"
 
@@ -22,4 +28,19 @@ func newTestHandler(t *testing.T, store db.Store, cache cache.Cache) Handler {
 	require.NotEmpty(t, tokenMaker)
 
 	return NewHandler(config, store, tokenMaker, cache)
+}
+
+func newContextWithBearerToken(t *testing.T, tokenMaker token.Maker, accountOwner string, role token.Role, duration time.Duration) context.Context {
+	tk, _, err := tokenMaker.CreateToken(accountOwner, role, duration)
+	require.NoError(t, err)
+	require.NotEmpty(t, tk)
+
+	bearerToken := fmt.Sprintf("%s %s", middleware.AuthorizationBearer, tk)
+	md := metadata.MD{
+		middleware.AuthorizationHeader: []string{
+			bearerToken,
+		},
+	}
+
+	return metadata.NewIncomingContext(context.Background(), md)
 }

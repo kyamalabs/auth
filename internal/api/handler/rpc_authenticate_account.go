@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 
+	"github.com/kyamagames/auth/internal/token"
+
 	"github.com/kyamagames/auth/internal/challenge"
 	"github.com/kyamagames/auth/internal/validator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -58,7 +60,7 @@ func (h *Handler) AuthenticateAccount(ctx context.Context, req *pb.AuthenticateA
 		}
 	}
 
-	session, err := NewSession(ctx, account.Owner, h.config, h.tokenMaker, h.store)
+	session, err := NewSession(ctx, account.Owner, token.Role(account.Role), h.config, h.tokenMaker, h.store)
 	if err != nil {
 		logger.Error().Err(err).Msg("could not create account session")
 		return nil, status.Error(codes.Internal, InternalServerError)

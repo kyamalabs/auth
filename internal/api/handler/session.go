@@ -21,13 +21,13 @@ type Session struct {
 	ExpiresAt           time.Time
 }
 
-func NewSession(ctx context.Context, accountOwner string, config utils.Config, tokenMaker token.Maker, store db.Store) (*Session, error) {
-	accessToken, accessTokenPayload, err := tokenMaker.CreateToken(accountOwner, token.Gamer, config.AccessTokenDuration)
+func NewSession(ctx context.Context, accountOwner string, accountRole token.Role, config utils.Config, tokenMaker token.Maker, store db.Store) (*Session, error) {
+	accessToken, accessTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, config.AccessTokenDuration)
 	if err != nil {
 		return nil, fmt.Errorf("could not create access token: %w", err)
 	}
 
-	refreshToken, refreshTokenPayload, err := tokenMaker.CreateToken(accountOwner, token.Gamer, config.RefreshTokenDuration)
+	refreshToken, refreshTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, config.RefreshTokenDuration)
 	if err != nil {
 		return nil, fmt.Errorf("could not create refresh token token: %w", err)
 	}

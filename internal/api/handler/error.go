@@ -10,6 +10,7 @@ const (
 	InternalServerError        string = "An unexpected error occurred while processing your request."
 	SignatureVerificationError string = "Signature verification failed. Please try again."
 	InvalidChallengeError      string = "Challenge is invalid. Please try again."
+	UnauthorizedAccessError    string = "Authorization failed. Please verify your credentials and try again."
 )
 
 func fieldViolation(field string, err error) *errdetails.BadRequest_FieldViolation {

@@ -13,6 +13,7 @@ var ErrExpiredToken = errors.New("token is expired")
 
 const (
 	Gamer Role = "gamer"
+	Admin Role = "admin"
 )
 
 type Payload struct {

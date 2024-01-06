@@ -25,16 +25,6 @@ func ValidateWalletAddress(walletAddress string) error {
 	return nil
 }
 
-func ValidateServerGeneratedChallenge(challenge string, challengePrefix string) error {
-	if !strings.HasPrefix(challenge, challengePrefix) {
-		return errors.New("not a valid server generated challenge")
-	}
-
-	// TODO: Verify that the challenge was issued by the server for the given address.
-
-	return nil
-}
-
 func ValidateEthereumSignature(signature string) error {
 	signature = strings.TrimPrefix(signature, "0x")
 	if len(signature) != 130 {

@@ -85,9 +85,72 @@
           "Auth"
         ]
       }
+    },
+    "/auth/accounts/verify-access-token": {
+      "get": {
+        "summary": "Verify Access Token",
+        "description": "Verify whether an access token is valid for a specified account.",
+        "operationId": "Auth_VerifyAccessToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbVerifyAccessTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
     }
   },
   "definitions": {
+    "AccessTokenPayloadRole": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "GAMER",
+        "ADMIN"
+      ],
+      "default": "UNKNOWN"
+    },
+    "pbAccessTokenPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "walletAddress": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/AccessTokenPayloadRole"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "pbAccount": {
       "type": "object",
       "properties": {
@@ -158,6 +221,14 @@
         },
         "tokenType": {
           "type": "string"
+        }
+      }
+    },
+    "pbVerifyAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "payload": {
+          "$ref": "#/definitions/pbAccessTokenPayload"
         }
       }
     },

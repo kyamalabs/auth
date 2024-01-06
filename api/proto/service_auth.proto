@@ -4,6 +4,7 @@ package pb;
 
 import "rpc_get_challenge.proto";
 import "google/api/annotations.proto";
+import "rpc_verify_access_token.proto";
 import "rpc_authenticate_account.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -41,6 +42,17 @@ service Auth {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       description: "Authenticate an account using its wallet address, a server generated challenge, and a signature.";
       summary: "Authenticate Account";
+    };
+  }
+
+  rpc VerifyAccessToken(VerifyAccessTokenRequest) returns (VerifyAccessTokenResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/verify-access-token"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Verify whether an access token is valid for a specified account.";
+      summary: "Verify Access Token";
     };
   }
 }
