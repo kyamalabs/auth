@@ -17,4 +17,4 @@ WHERE id = $1 LIMIT 1;
 -- name: RevokeAccountSessions :execresult
 UPDATE sessions
 SET is_revoked = true
-WHERE wallet_address = $1;
+WHERE wallet_address = $1 AND is_revoked = false;

@@ -23,7 +23,7 @@ func (h *Handler) VerifyAccessToken(ctx context.Context, req *pb.VerifyAccessTok
 		return nil, invalidArgumentError(violations)
 	}
 
-	authPayload, err := middleware.AuthorizeAccount(ctx, req.GetWalletAddress(), h.tokenMaker, []token.Role{token.Gamer})
+	authPayload, err := middleware.AuthorizeAccount(ctx, req.GetWalletAddress(), h.tokenMaker, token.AccessToken, []token.Role{token.Gamer})
 	if err != nil {
 		logger.Error().Err(err).Msg("could not authorize account")
 		return nil, status.Error(codes.Unauthenticated, UnauthorizedAccessError)

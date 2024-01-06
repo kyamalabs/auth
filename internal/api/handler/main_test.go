@@ -6,6 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/status"
+
 	"github.com/kyamagames/auth/internal/api/middleware"
 	"google.golang.org/grpc/metadata"
 
@@ -30,8 +33,8 @@ func newTestHandler(t *testing.T, store db.Store, cache cache.Cache) Handler {
 	return NewHandler(config, store, tokenMaker, cache)
 }
 
-func newContextWithBearerToken(t *testing.T, tokenMaker token.Maker, accountOwner string, role token.Role, duration time.Duration) context.Context {
-	tk, _, err := tokenMaker.CreateToken(accountOwner, role, duration)
+func newContextWithBearerToken(t *testing.T, tokenMaker token.Maker, accountOwner string, role token.Role, tokenAccess token.TokenAccess, duration time.Duration) context.Context {
+	tk, _, err := tokenMaker.CreateToken(accountOwner, role, tokenAccess, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, tk)
 
@@ -43,4 +46,22 @@ func newContextWithBearerToken(t *testing.T, tokenMaker token.Maker, accountOwne
 	}
 
 	return metadata.NewIncomingContext(context.Background(), md)
+}
+
+func checkInvalidRequestParams(t *testing.T, err error, expectedFieldViolations []string) {
+	var violations []string
+
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	details := st.Details()
+	for _, detail := range details {
+		br, ok := detail.(*errdetails.BadRequest)
+		require.True(t, ok)
+		fieldViolations := br.FieldViolations
+		for _, violation := range fieldViolations {
+			violations = append(violations, violation.Field)
+		}
+	}
+
+	require.ElementsMatch(t, expectedFieldViolations, violations)
 }

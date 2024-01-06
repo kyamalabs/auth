@@ -18,13 +18,14 @@ func TestAuthorizeAccount(t *testing.T) {
 		name            string
 		buildContext    func(t *testing.T, tokenMaker token.Maker) context.Context
 		walletAddress   string
+		tokenAccess     token.TokenAccess
 		accessibleRoles []token.Role
 		checkResponse   func(t *testing.T, payload *token.Payload, err error)
 	}{
 		{
 			name: "Success",
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, 30*time.Second)
+				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, token.AccessToken, 30*time.Second)
 				require.NoError(t, err)
 				require.NotEmpty(t, tk)
 
@@ -38,6 +39,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.NoError(t, err)
@@ -53,6 +55,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return context.Background()
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -71,6 +74,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -89,6 +93,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -107,6 +112,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -116,7 +122,7 @@ func TestAuthorizeAccount(t *testing.T) {
 		{
 			name: "Failure - invalid authorization token",
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, -30*time.Second)
+				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, token.AccessToken, -30*time.Second)
 				require.NoError(t, err)
 
 				md := metadata.MD{
@@ -128,6 +134,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -137,7 +144,7 @@ func TestAuthorizeAccount(t *testing.T) {
 		{
 			name: "Failure - inaccessible role",
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Admin, 30*time.Second)
+				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Admin, token.AccessToken, 30*time.Second)
 				require.NoError(t, err)
 
 				md := metadata.MD{
@@ -149,6 +156,7 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   testWalletAddress,
+			tokenAccess:     token.AccessToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -158,7 +166,7 @@ func TestAuthorizeAccount(t *testing.T) {
 		{
 			name: "Failure - mismatch in wallet addresses for gamer role",
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, 30*time.Second)
+				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, token.AccessToken, 30*time.Second)
 				require.NoError(t, err)
 
 				md := metadata.MD{
@@ -170,6 +178,29 @@ func TestAuthorizeAccount(t *testing.T) {
 				return metadata.NewIncomingContext(context.Background(), md)
 			},
 			walletAddress:   "some_other_wallet_address",
+			tokenAccess:     token.AccessToken,
+			accessibleRoles: []token.Role{token.Gamer},
+			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
+				require.Error(t, err)
+				require.Empty(t, payload)
+			},
+		},
+		{
+			name: "mismatch in token access",
+			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
+				tk, _, err := tokenMaker.CreateToken(testWalletAddress, token.Gamer, token.AccessToken, 30*time.Second)
+				require.NoError(t, err)
+
+				md := metadata.MD{
+					AuthorizationHeader: []string{
+						fmt.Sprintf("%s %s", AuthorizationBearer, tk),
+					},
+				}
+
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			walletAddress:   "some_other_wallet_address",
+			tokenAccess:     token.RefreshToken,
 			accessibleRoles: []token.Role{token.Gamer},
 			checkResponse: func(t *testing.T, payload *token.Payload, err error) {
 				require.Error(t, err)
@@ -185,7 +216,7 @@ func TestAuthorizeAccount(t *testing.T) {
 			tokenMaker := getTestTokenMaker(t)
 
 			ctx := tc.buildContext(t, tokenMaker)
-			payload, err := AuthorizeAccount(ctx, tc.walletAddress, tokenMaker, tc.accessibleRoles)
+			payload, err := AuthorizeAccount(ctx, tc.walletAddress, tokenMaker, tc.tokenAccess, tc.accessibleRoles)
 
 			tc.checkResponse(t, payload, err)
 		})

@@ -14,7 +14,7 @@ func createNewPayload(t *testing.T, duration time.Duration) *Payload {
 	require.NoError(t, err)
 	require.NotEmpty(t, ethereumWallet)
 
-	payload, err := NewPayload(ethereumWallet.Address, Gamer, duration)
+	payload, err := NewPayload(ethereumWallet.Address, Gamer, RefreshToken, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
@@ -22,6 +22,7 @@ func createNewPayload(t *testing.T, duration time.Duration) *Payload {
 	require.IsType(t, uuid.UUID{}, payload.ID)
 	require.Equal(t, ethereumWallet.Address, payload.WalletAddress)
 	require.Equal(t, Gamer, payload.Role)
+	require.Equal(t, RefreshToken, payload.TokenAccess)
 	require.WithinDuration(t, time.Now().UTC(), payload.IssuedAt, time.Second)
 	require.WithinDuration(t, time.Now().UTC().Add(duration), payload.ExpiresAt, time.Second)
 

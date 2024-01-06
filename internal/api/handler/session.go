@@ -22,12 +22,12 @@ type Session struct {
 }
 
 func NewSession(ctx context.Context, accountOwner string, accountRole token.Role, config utils.Config, tokenMaker token.Maker, store db.Store) (*Session, error) {
-	accessToken, accessTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, config.AccessTokenDuration)
+	accessToken, accessTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, token.AccessToken, config.AccessTokenDuration)
 	if err != nil {
 		return nil, fmt.Errorf("could not create access token: %w", err)
 	}
 
-	refreshToken, refreshTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, config.RefreshTokenDuration)
+	refreshToken, refreshTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, token.RefreshToken, config.RefreshTokenDuration)
 	if err != nil {
 		return nil, fmt.Errorf("could not create refresh token token: %w", err)
 	}

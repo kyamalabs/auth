@@ -82,7 +82,7 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 const revokeAccountSessions = `-- name: RevokeAccountSessions :execresult
 UPDATE sessions
 SET is_revoked = true
-WHERE wallet_address = $1
+WHERE wallet_address = $1 AND is_revoked = false
 `
 
 func (q *Queries) RevokeAccountSessions(ctx context.Context, walletAddress string) (pgconn.CommandTag, error) {

@@ -15,7 +15,7 @@ const (
 	AuthorizationBearer = "bearer"
 )
 
-func AuthorizeAccount(ctx context.Context, walletAddress string, tokenMaker token.Maker, accessibleRoles []token.Role) (*token.Payload, error) {
+func AuthorizeAccount(ctx context.Context, walletAddress string, tokenMaker token.Maker, tokenAccess token.TokenAccess, accessibleRoles []token.Role) (*token.Payload, error) {
 	mtdt, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("could not get metadata from incoming context")
@@ -41,6 +41,10 @@ func AuthorizeAccount(ctx context.Context, walletAddress string, tokenMaker toke
 	payload, err := tokenMaker.VerifyToken(tk)
 	if err != nil {
 		return nil, fmt.Errorf("invalid authorization token: %s", err)
+	}
+
+	if payload.TokenAccess != tokenAccess {
+		return nil, fmt.Errorf("unauthorized token access: %s", payload.TokenAccess)
 	}
 
 	if !hasPermission(payload.Role, accessibleRoles) {

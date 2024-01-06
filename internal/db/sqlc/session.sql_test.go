@@ -19,7 +19,7 @@ func createTestSession(t *testing.T, walletAddress string) Session {
 	require.NoError(t, err)
 	require.NotEmpty(t, maker)
 
-	refreshToken, payload, err := maker.CreateToken(walletAddress, token.Gamer, 1*time.Hour)
+	refreshToken, payload, err := maker.CreateToken(walletAddress, token.Gamer, token.RefreshToken, 1*time.Hour)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 	require.NotEmpty(t, refreshToken)

@@ -10,8 +10,6 @@ import (
 	"github.com/kyamagames/auth/internal/utils"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/status"
 )
 
 func TestGetChallengeAPI(t *testing.T) {
@@ -52,22 +50,8 @@ func TestGetChallengeAPI(t *testing.T) {
 				require.Error(t, err)
 				require.Empty(t, res)
 
-				var violations []string
 				expectedFieldViolations := []string{"wallet_address"}
-
-				st, ok := status.FromError(err)
-				require.True(t, ok)
-				details := st.Details()
-				for _, detail := range details {
-					br, ok := detail.(*errdetails.BadRequest)
-					require.True(t, ok)
-					fieldViolations := br.FieldViolations
-					for _, violation := range fieldViolations {
-						violations = append(violations, violation.Field)
-					}
-				}
-
-				require.ElementsMatch(t, expectedFieldViolations, violations)
+				checkInvalidRequestParams(t, err, expectedFieldViolations)
 			},
 		},
 	}

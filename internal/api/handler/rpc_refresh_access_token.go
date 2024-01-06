@@ -23,7 +23,7 @@ func (h *Handler) RefreshAccessToken(ctx context.Context, req *pb.RefreshAccessT
 		return nil, invalidArgumentError(violations)
 	}
 
-	authPayload, err := middleware.AuthorizeAccount(ctx, req.GetWalletAddress(), h.tokenMaker, []token.Role{token.Gamer})
+	authPayload, err := middleware.AuthorizeAccount(ctx, req.GetWalletAddress(), h.tokenMaker, token.RefreshToken, []token.Role{token.Gamer})
 	if err != nil {
 		logger.Error().Err(err).Msg("could not authorize account")
 		return nil, status.Error(codes.Unauthenticated, UnauthorizedAccessError)
@@ -43,7 +43,7 @@ func (h *Handler) RefreshAccessToken(ctx context.Context, req *pb.RefreshAccessT
 		return nil, status.Error(codes.Unauthenticated, UnauthorizedAccessError)
 	}
 
-	accessToken, accessTokenPayload, err := h.tokenMaker.CreateToken(req.GetWalletAddress(), authPayload.Role, h.config.AccessTokenDuration)
+	accessToken, accessTokenPayload, err := h.tokenMaker.CreateToken(req.GetWalletAddress(), authPayload.Role, token.AccessToken, h.config.AccessTokenDuration)
 	if err != nil {
 		logger.Error().Err(err).Msg("could not create access token")
 		return nil, status.Error(codes.Unauthenticated, InternalServerError)

@@ -9,11 +9,8 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/kyamagames/auth/internal/challenge"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/status"
-
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
+	"github.com/kyamagames/auth/internal/challenge"
 
 	"github.com/google/uuid"
 	"github.com/kyamagames/auth/api/pb"
@@ -148,22 +145,8 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 				require.Error(t, err)
 				require.Empty(t, res)
 
-				var violations []string
 				expectedFieldViolations := []string{"wallet_address", "challenge", "signature"}
-
-				st, ok := status.FromError(err)
-				require.True(t, ok)
-				details := st.Details()
-				for _, detail := range details {
-					br, ok := detail.(*errdetails.BadRequest)
-					require.True(t, ok)
-					fieldViolations := br.FieldViolations
-					for _, violation := range fieldViolations {
-						violations = append(violations, violation.Field)
-					}
-				}
-
-				require.ElementsMatch(t, expectedFieldViolations, violations)
+				checkInvalidRequestParams(t, err, expectedFieldViolations)
 			},
 		},
 		{

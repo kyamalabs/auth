@@ -12,8 +12,6 @@ import (
 	"github.com/kyamagames/auth/internal/utils"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/status"
 )
 
 func generateTestVerifyAccessTokenReqParams(t *testing.T) *pb.VerifyAccessTokenRequest {
@@ -40,7 +38,7 @@ func TestVerifyAccessTokenAPI(t *testing.T) {
 			name: "Success",
 			req:  verifyAccessTokenReqParams,
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				return newContextWithBearerToken(t, tokenMaker, verifyAccessTokenReqParams.WalletAddress, token.Gamer, 30*time.Second)
+				return newContextWithBearerToken(t, tokenMaker, verifyAccessTokenReqParams.WalletAddress, token.Gamer, token.AccessToken, 30*time.Second)
 			},
 			checkResponse: func(t *testing.T, res *pb.VerifyAccessTokenResponse, err error) {
 				require.NoError(t, err)
@@ -59,22 +57,8 @@ func TestVerifyAccessTokenAPI(t *testing.T) {
 				require.Error(t, err)
 				require.Empty(t, res)
 
-				var violations []string
 				expectedFieldViolations := []string{"wallet_address"}
-
-				st, ok := status.FromError(err)
-				require.True(t, ok)
-				details := st.Details()
-				for _, detail := range details {
-					br, ok := detail.(*errdetails.BadRequest)
-					require.True(t, ok)
-					fieldViolations := br.FieldViolations
-					for _, violation := range fieldViolations {
-						violations = append(violations, violation.Field)
-					}
-				}
-
-				require.ElementsMatch(t, expectedFieldViolations, violations)
+				checkInvalidRequestParams(t, err, expectedFieldViolations)
 			},
 		},
 		{

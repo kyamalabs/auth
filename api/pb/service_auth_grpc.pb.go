@@ -23,6 +23,7 @@ const (
 	Auth_AuthenticateAccount_FullMethodName = "/pb.Auth/AuthenticateAccount"
 	Auth_VerifyAccessToken_FullMethodName   = "/pb.Auth/VerifyAccessToken"
 	Auth_RefreshAccessToken_FullMethodName  = "/pb.Auth/RefreshAccessToken"
+	Auth_RevokeRefreshTokens_FullMethodName = "/pb.Auth/RevokeRefreshTokens"
 )
 
 // AuthClient is the client API for Auth service.
@@ -33,6 +34,7 @@ type AuthClient interface {
 	AuthenticateAccount(ctx context.Context, in *AuthenticateAccountRequest, opts ...grpc.CallOption) (*AuthenticateAccountResponse, error)
 	VerifyAccessToken(ctx context.Context, in *VerifyAccessTokenRequest, opts ...grpc.CallOption) (*VerifyAccessTokenResponse, error)
 	RefreshAccessToken(ctx context.Context, in *RefreshAccessTokenRequest, opts ...grpc.CallOption) (*RefreshAccessTokenResponse, error)
+	RevokeRefreshTokens(ctx context.Context, in *RevokeRefreshTokensRequest, opts ...grpc.CallOption) (*RevokeRefreshTokensResponse, error)
 }
 
 type authClient struct {
@@ -79,6 +81,15 @@ func (c *authClient) RefreshAccessToken(ctx context.Context, in *RefreshAccessTo
 	return out, nil
 }
 
+func (c *authClient) RevokeRefreshTokens(ctx context.Context, in *RevokeRefreshTokensRequest, opts ...grpc.CallOption) (*RevokeRefreshTokensResponse, error) {
+	out := new(RevokeRefreshTokensResponse)
+	err := c.cc.Invoke(ctx, Auth_RevokeRefreshTokens_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type AuthServer interface {
 	AuthenticateAccount(context.Context, *AuthenticateAccountRequest) (*AuthenticateAccountResponse, error)
 	VerifyAccessToken(context.Context, *VerifyAccessTokenRequest) (*VerifyAccessTokenResponse, error)
 	RefreshAccessToken(context.Context, *RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error)
+	RevokeRefreshTokens(context.Context, *RevokeRefreshTokensRequest) (*RevokeRefreshTokensResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedAuthServer) VerifyAccessToken(context.Context, *VerifyAccessT
 }
 func (UnimplementedAuthServer) RefreshAccessToken(context.Context, *RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshAccessToken not implemented")
+}
+func (UnimplementedAuthServer) RevokeRefreshTokens(context.Context, *RevokeRefreshTokensRequest) (*RevokeRefreshTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeRefreshTokens not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -191,6 +206,24 @@ func _Auth_RefreshAccessToken_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_RevokeRefreshTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeRefreshTokensRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).RevokeRefreshTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_RevokeRefreshTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).RevokeRefreshTokens(ctx, req.(*RevokeRefreshTokensRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshAccessToken",
 			Handler:    _Auth_RefreshAccessToken_Handler,
+		},
+		{
+			MethodName: "RevokeRefreshTokens",
+			Handler:    _Auth_RevokeRefreshTokens_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
