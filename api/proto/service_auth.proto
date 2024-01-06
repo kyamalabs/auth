@@ -6,6 +6,7 @@ import "rpc_get_challenge.proto";
 import "google/api/annotations.proto";
 import "rpc_verify_access_token.proto";
 import "rpc_authenticate_account.proto";
+import "rpc_refresh_access_token.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/kyamagames/auth/pb";
@@ -53,6 +54,17 @@ service Auth {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       description: "Verify whether an access token is valid for a specified account.";
       summary: "Verify Access Token";
+    };
+  }
+
+  rpc RefreshAccessToken(RefreshAccessTokenRequest) returns (RefreshAccessTokenResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/refresh-access-token"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Refresh an account's access token.";
+      summary: "Refresh Access Token";
     };
   }
 }

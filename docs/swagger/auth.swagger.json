@@ -86,6 +86,38 @@
         ]
       }
     },
+    "/auth/accounts/refresh-access-token": {
+      "get": {
+        "summary": "Refresh Access Token",
+        "description": "Refresh an account's access token.",
+        "operationId": "Auth_RefreshAccessToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbRefreshAccessTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/auth/accounts/verify-access-token": {
       "get": {
         "summary": "Verify Access Token",
@@ -196,6 +228,14 @@
       "properties": {
         "challenge": {
           "type": "string"
+        }
+      }
+    },
+    "pbRefreshAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/pbSession"
         }
       }
     },
