@@ -10,3 +10,7 @@ coverage:
         target: 0%
         threshold: 50%
         base: auto
+
+ignore:
+  - "internal/db/sqlc/models.go"
+  - "internal/db/sqlc/db.go"

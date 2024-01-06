@@ -14,16 +14,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createTestSession(t *testing.T) Session {
-	wallet, account := createTestAccount(t)
-	require.NotEmpty(t, wallet)
-	require.NotEmpty(t, account)
-
+func createTestSession(t *testing.T, walletAddress string) Session {
 	maker, err := token.NewPasetoMaker(gofakeit.LetterN(32))
 	require.NoError(t, err)
 	require.NotEmpty(t, maker)
 
-	refreshToken, payload, err := maker.CreateToken(wallet.Address, token.Gamer, 1*time.Hour)
+	refreshToken, payload, err := maker.CreateToken(walletAddress, token.Gamer, token.RefreshToken, 1*time.Hour)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 	require.NotEmpty(t, refreshToken)
@@ -39,7 +35,7 @@ func createTestSession(t *testing.T) Session {
 
 	params := CreateSessionParams{
 		ID:            uuid.New(),
-		WalletAddress: account.Owner,
+		WalletAddress: walletAddress,
 		RefreshToken:  refreshToken,
 		UserAgent:     gofakeit.UserAgent(),
 		ClientIp:      clientIP,
@@ -58,7 +54,7 @@ func createTestSession(t *testing.T) Session {
 	require.WithinDuration(t, params.ExpiresAt, session.ExpiresAt, time.Second)
 	require.NotZero(t, session.CreatedAt)
 
-	require.Equal(t, account.Owner, session.WalletAddress)
+	require.Equal(t, walletAddress, session.WalletAddress)
 
 	require.False(t, session.IsRevoked)
 
@@ -70,7 +66,11 @@ func TestCreateSession(t *testing.T) {
 		t.Skip("skipping test to maintain db state")
 	}
 
-	session := createTestSession(t)
+	wallet, account := createTestAccount(t)
+	require.NotEmpty(t, wallet)
+	require.NotEmpty(t, account)
+
+	session := createTestSession(t, wallet.Address)
 	require.NotEmpty(t, session)
 }
 
@@ -79,7 +79,11 @@ func TestGetSession(t *testing.T) {
 		t.Skip("skipping test to maintain db state")
 	}
 
-	session := createTestSession(t)
+	wallet, account := createTestAccount(t)
+	require.NotEmpty(t, wallet)
+	require.NotEmpty(t, account)
+
+	session := createTestSession(t, wallet.Address)
 	require.NotEmpty(t, session)
 
 	fetchedSession, err := testStore.GetSession(context.Background(), session.ID)
@@ -96,4 +100,35 @@ func TestGetSession(t *testing.T) {
 	require.WithinDuration(t, session.CreatedAt, fetchedSession.CreatedAt, time.Second)
 
 	require.False(t, fetchedSession.IsRevoked)
+}
+
+func TestRevokeAccountSessions(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test to maintain db state")
+	}
+
+	wallet, account := createTestAccount(t)
+	require.NotEmpty(t, wallet)
+	require.NotEmpty(t, account)
+
+	numCreatedSessions := 12
+	var createdSessions []Session
+
+	for i := 0; i < numCreatedSessions; i++ {
+		session := createTestSession(t, wallet.Address)
+		require.NotEmpty(t, session)
+
+		createdSessions = append(createdSessions, session)
+	}
+
+	ct, err := testStore.RevokeAccountSessions(context.Background(), wallet.Address)
+	require.NoError(t, err)
+	require.Equal(t, numCreatedSessions, int(ct.RowsAffected()))
+
+	for _, createdSession := range createdSessions {
+		gotSession, err := testStore.GetSession(context.Background(), createdSession.ID)
+		require.NoError(t, err)
+		require.NotEmpty(t, gotSession)
+		require.True(t, gotSession.IsRevoked)
+	}
 }

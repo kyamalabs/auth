@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createPasetoToken(t *testing.T, duration time.Duration) (*utils.EthereumWallet, Maker, string) {
+func createPasetoToken(t *testing.T, tokenAccess TokenAccess, duration time.Duration) (*utils.EthereumWallet, Maker, string) {
 	ethereumWallet, err := utils.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, ethereumWallet)
@@ -19,7 +19,7 @@ func createPasetoToken(t *testing.T, duration time.Duration) (*utils.EthereumWal
 	require.NoError(t, err)
 	require.NotEmpty(t, maker)
 
-	token, payload, err := maker.CreateToken(ethereumWallet.Address, Gamer, duration)
+	token, payload, err := maker.CreateToken(ethereumWallet.Address, Gamer, tokenAccess, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
@@ -62,12 +62,12 @@ func TestNewPasetoMaker(t *testing.T) {
 }
 
 func TestPasetoMaker_CreateToken(t *testing.T) {
-	createPasetoToken(t, 5*time.Hour)
+	createPasetoToken(t, AccessToken, 5*time.Hour)
 }
 
 func TestPasetoMaker_VerifyToken(t *testing.T) {
 	duration := 5 * time.Hour
-	wallet, maker, token := createPasetoToken(t, duration)
+	wallet, maker, token := createPasetoToken(t, AccessToken, duration)
 
 	testCases := []struct {
 		name      string
@@ -108,7 +108,7 @@ func TestPasetoMaker_VerifyToken(t *testing.T) {
 			require.Equal(t, wallet.Address, payload.WalletAddress)
 			require.Equal(t, Gamer, payload.Role)
 			require.WithinDuration(t, time.Now().UTC(), payload.IssuedAt, time.Second)
-			require.WithinDuration(t, time.Now().UTC().Add(duration), payload.ExpiredAt, time.Second)
+			require.WithinDuration(t, time.Now().UTC().Add(duration), payload.ExpiresAt, time.Second)
 		})
 	}
 }

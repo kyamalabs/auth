@@ -1,0 +1,345 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Auth Service",
+    "version": "0",
+    "contact": {
+      "name": "Kyama Games",
+      "url": "https://kyamagames.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/auth/accounts/authenticate": {
+      "post": {
+        "summary": "Authenticate Account",
+        "description": "Authenticate an account using its wallet address, a server generated challenge, and a signature.",
+        "operationId": "Auth_AuthenticateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbAuthenticateAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbAuthenticateAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/accounts/challenge": {
+      "get": {
+        "summary": "Get Account Authentication Challenge",
+        "description": "Get an authentication challenge to be used to authenticate the specified wallet address",
+        "operationId": "Auth_GetChallenge",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetChallengeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/accounts/refresh-access-token": {
+      "get": {
+        "summary": "Refresh Access Token",
+        "description": "Refresh an account's access token.",
+        "operationId": "Auth_RefreshAccessToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbRefreshAccessTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/accounts/revoke-refresh-tokens": {
+      "get": {
+        "summary": "Revoke Refresh Tokens",
+        "description": "Revoke all refresh tokens associated with a given account.",
+        "operationId": "Auth_RevokeRefreshTokens",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbRevokeRefreshTokensResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/accounts/verify-access-token": {
+      "get": {
+        "summary": "Verify Access Token",
+        "description": "Verify whether an access token is valid for a specified account.",
+        "operationId": "Auth_VerifyAccessToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbVerifyAccessTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AccessTokenPayloadRole": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "GAMER",
+        "ADMIN"
+      ],
+      "default": "UNKNOWN"
+    },
+    "pbAccessTokenPayload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "walletAddress": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/AccessTokenPayloadRole"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pbAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pbAuthenticateAccountRequest": {
+      "type": "object",
+      "properties": {
+        "walletAddress": {
+          "type": "string"
+        },
+        "challenge": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "pbAuthenticateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/pbAccount"
+        },
+        "session": {
+          "$ref": "#/definitions/pbSession"
+        }
+      }
+    },
+    "pbGetChallengeResponse": {
+      "type": "object",
+      "properties": {
+        "challenge": {
+          "type": "string"
+        }
+      }
+    },
+    "pbRefreshAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/pbSession"
+        }
+      }
+    },
+    "pbRevokeRefreshTokensResponse": {
+      "type": "object",
+      "properties": {
+        "numSessionsRevoked": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "pbSession": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string"
+        },
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        },
+        "accessTokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "refreshTokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tokenType": {
+          "type": "string"
+        }
+      }
+    },
+    "pbVerifyAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "payload": {
+          "$ref": "#/definitions/pbAccessTokenPayload"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
