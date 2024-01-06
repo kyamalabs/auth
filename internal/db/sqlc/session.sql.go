@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 const createSession = `-- name: CreateSession :one
@@ -76,4 +77,14 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const revokeAccountSessions = `-- name: RevokeAccountSessions :execresult
+UPDATE sessions
+SET is_revoked = true
+WHERE wallet_address = $1
+`
+
+func (q *Queries) RevokeAccountSessions(ctx context.Context, walletAddress string) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, revokeAccountSessions, walletAddress)
 }

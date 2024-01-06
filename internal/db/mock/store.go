@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	uuid "github.com/google/uuid"
+	pgconn "github.com/jackc/pgx/v5/pgconn"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -99,4 +100,19 @@ func (m *MockStore) GetSession(arg0 context.Context, arg1 uuid.UUID) (db.Session
 func (mr *MockStoreMockRecorder) GetSession(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockStore)(nil).GetSession), arg0, arg1)
+}
+
+// RevokeAccountSessions mocks base method.
+func (m *MockStore) RevokeAccountSessions(arg0 context.Context, arg1 string) (pgconn.CommandTag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeAccountSessions", arg0, arg1)
+	ret0, _ := ret[0].(pgconn.CommandTag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RevokeAccountSessions indicates an expected call of RevokeAccountSessions.
+func (mr *MockStoreMockRecorder) RevokeAccountSessions(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccountSessions", reflect.TypeOf((*MockStore)(nil).RevokeAccountSessions), arg0, arg1)
 }

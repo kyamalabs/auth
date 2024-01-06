@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Querier interface {
@@ -15,6 +16,7 @@ type Querier interface {
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	GetAccountByOwner(ctx context.Context, owner string) (Account, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
+	RevokeAccountSessions(ctx context.Context, walletAddress string) (pgconn.CommandTag, error)
 }
 
 var _ Querier = (*Queries)(nil)
