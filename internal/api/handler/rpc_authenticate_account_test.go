@@ -98,6 +98,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Times(1).
 					Return(authenticateAccountReqParams.GetChallenge(), nil)
 
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
+
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
 					Times(1).
@@ -184,6 +189,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return("", nil)
+
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
 			},
 			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
 				require.Empty(t, res)
@@ -199,6 +209,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return("Kyama Games: Pixie-bob: 6859", nil)
+
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
 			},
 			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
 				require.Empty(t, res)
@@ -218,6 +233,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
 			},
 			checkResponse: func(t *testing.T, res *pb.AuthenticateAccountResponse, err error) {
 				require.Empty(t, res)
@@ -233,6 +253,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
 
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
@@ -253,6 +278,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
 
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
@@ -278,6 +308,11 @@ func TestAuthenticateAccountAPI(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(authenticateAccountReqParams.GetChallenge(), nil)
+
+				cache.EXPECT().
+					Del(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil)
 
 				store.EXPECT().
 					GetAccountByOwner(gomock.Any(), authenticateAccountReqParams.WalletAddress).
