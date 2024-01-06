@@ -38,6 +38,19 @@ func (rc *RedisCache) Get(ctx context.Context, key string) (interface{}, error) 
 	return deserializedValue, nil
 }
 
+func (rc *RedisCache) Del(ctx context.Context, key string) error {
+	numKeysDeleted, err := rc.client.Del(ctx, key).Result()
+	if err != nil {
+		return fmt.Errorf("could not delete key in redis cache: %w", err)
+	}
+
+	if numKeysDeleted == 0 {
+		return Nil
+	}
+
+	return nil
+}
+
 func NewRedisCache(connURL string) (Cache, error) {
 	opts, err := redis.ParseURL(connURL)
 	if err != nil {

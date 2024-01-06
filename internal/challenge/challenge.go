@@ -27,15 +27,7 @@ var InvalidChallengeError = errors.New("invalid challenge")
 func GenerateChallenge(ctx context.Context, cache cache.Cache, walletAddress string) (string, error) {
 	cacheKey := fmt.Sprintf("%s:%s", cacheKeyPrefix, walletAddress)
 
-	randomNum, err := rand.Int(rand.Reader, big.NewInt(2))
-	if err != nil {
-		return "", fmt.Errorf("could not generate random number: %w", err)
-	}
-
-	challengeBody := gofakeit.Dog()
-	if randomNum.Int64() == 1 {
-		challengeBody = gofakeit.Cat()
-	}
+	challengeBody := gofakeit.PetName()
 
 	randomChallengeSuffix, err := generateRandomChallengeSuffix(suffixLen)
 	if err != nil {
@@ -52,10 +44,10 @@ func GenerateChallenge(ctx context.Context, cache cache.Cache, walletAddress str
 	return challenge, nil
 }
 
-func FetchChallenge(ctx context.Context, cache cache.Cache, walletAddress string) (string, error) {
+func FetchChallenge(ctx context.Context, c cache.Cache, walletAddress string) (string, error) {
 	cacheKey := fmt.Sprintf("%s:%s", cacheKeyPrefix, walletAddress)
 
-	res, err := cache.Get(ctx, cacheKey)
+	res, err := c.Get(ctx, cacheKey)
 	if res == nil {
 		return "", fmt.Errorf("challenge not present in cache")
 	}
@@ -66,6 +58,11 @@ func FetchChallenge(ctx context.Context, cache cache.Cache, walletAddress string
 	cachedChallenge, ok := res.(string)
 	if !ok {
 		return "", errors.New("could not cast challenge to string")
+	}
+
+	err = c.Del(ctx, cacheKey)
+	if err != nil && err != cache.Nil {
+		return "", fmt.Errorf("could not delete challenge key: %w", err)
 	}
 
 	return cachedChallenge, nil

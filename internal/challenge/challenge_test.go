@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyamagames/auth/internal/cache"
+
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
 	"github.com/kyamagames/auth/internal/utils"
 	"github.com/stretchr/testify/require"
@@ -44,10 +46,10 @@ func TestGenerateChallenge(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			cache := mockcache.NewMockCache(ctrl)
+			c := mockcache.NewMockCache(ctrl)
 
 			var capturedChallenge string
-			cache.EXPECT().
+			c.EXPECT().
 				Set(gomock.Any(), fmt.Sprintf("%s:%s", cacheKeyPrefix, wallet.Address), gomock.Any(), expiration).
 				Times(1).
 				Do(func(_ context.Context, _ string, challenge string, _ time.Duration) {
@@ -55,7 +57,7 @@ func TestGenerateChallenge(t *testing.T) {
 				}).
 				Return(tc.expectedCacheSetErr)
 
-			challenge, err := GenerateChallenge(context.Background(), cache, wallet.Address)
+			challenge, err := GenerateChallenge(context.Background(), c, wallet.Address)
 			if tc.expectedToErr {
 				require.Error(t, err)
 				return
@@ -82,16 +84,19 @@ func TestFetchChallenge(t *testing.T) {
 	require.NoError(t, err)
 
 	testCases := []struct {
-		name                   string
-		expectedCacheGetResult interface{}
-		expectedCacheGetError  error
-		expectedChallenge      string
-		expectedToErr          bool
+		name                     string
+		expectedCacheGetResult   interface{}
+		expectedCacheGetError    error
+		shouldCallCacheDelete    bool
+		expectedCacheDeleteError error
+		expectedChallenge        string
+		expectedToErr            bool
 	}{
 		{
 			name:                   "Success",
 			expectedCacheGetResult: "Kyama Games: Rottweiler: 6125",
 			expectedCacheGetError:  nil,
+			shouldCallCacheDelete:  true,
 			expectedChallenge:      "Kyama Games: Rottweiler: 6125",
 			expectedToErr:          false,
 		},
@@ -116,6 +121,24 @@ func TestFetchChallenge(t *testing.T) {
 			expectedChallenge:      "",
 			expectedToErr:          true,
 		},
+		{
+			name:                     "Failure - error deleting challenge key from cache",
+			expectedCacheGetResult:   "Kyama Games: Rottweiler: 6125",
+			expectedCacheGetError:    nil,
+			shouldCallCacheDelete:    true,
+			expectedCacheDeleteError: errors.New("some cache delete error"),
+			expectedChallenge:        "",
+			expectedToErr:            true,
+		},
+		{
+			name:                     "Failure - challenge key not present in cache",
+			expectedCacheGetResult:   "",
+			expectedCacheGetError:    nil,
+			shouldCallCacheDelete:    true,
+			expectedCacheDeleteError: cache.Nil,
+			expectedChallenge:        "",
+			expectedToErr:            false,
+		},
 	}
 
 	for i := range testCases {
@@ -125,14 +148,21 @@ func TestFetchChallenge(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			cache := mockcache.NewMockCache(ctrl)
+			c := mockcache.NewMockCache(ctrl)
 
-			cache.EXPECT().
+			c.EXPECT().
 				Get(gomock.Any(), fmt.Sprintf("%s:%s", cacheKeyPrefix, wallet.Address)).
 				Times(1).
 				Return(tc.expectedCacheGetResult, tc.expectedCacheGetError)
 
-			challenge, err := FetchChallenge(context.Background(), cache, wallet.Address)
+			if tc.shouldCallCacheDelete {
+				c.EXPECT().
+					Del(gomock.Any(), fmt.Sprintf("%s:%s", cacheKeyPrefix, wallet.Address)).
+					Times(1).
+					Return(tc.expectedCacheDeleteError)
+			}
+
+			challenge, err := FetchChallenge(context.Background(), c, wallet.Address)
 			if tc.expectedToErr {
 				require.Error(t, err)
 			}
