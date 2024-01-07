@@ -21,6 +21,22 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
       url: "https://kyamagames.com";
     };
   };
+  security_definitions: {
+    security: {
+      key: "bearer"
+      value: {
+        type: TYPE_API_KEY
+        in: IN_HEADER
+        name: "Authorization"
+        description: "Authentication token, prefixed by Bearer: bearer <token>"
+      }
+    }
+  };
+  security: {
+    security_requirement: {
+      key: "bearer"
+    }
+  };
 };
 
 service Auth {
@@ -32,6 +48,7 @@ service Auth {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       description: "Get an authentication challenge to be used to authenticate the specified wallet address";
       summary: "Get Account Authentication Challenge";
+      security: {};
     };
   }
 
@@ -44,6 +61,7 @@ service Auth {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       description: "Authenticate an account using its wallet address, a server generated challenge, and a signature.";
       summary: "Authenticate Account";
+      security: {};
     };
   }
 
