@@ -51,7 +51,8 @@
         ],
         "tags": [
           "Auth"
-        ]
+        ],
+        "security": []
       }
     },
     "/auth/accounts/challenge": {
@@ -83,7 +84,8 @@
         ],
         "tags": [
           "Auth"
-        ]
+        ],
+        "security": []
       }
     },
     "/auth/accounts/refresh-access-token": {
@@ -341,5 +343,18 @@
         }
       }
     }
-  }
+  },
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "description": "Authentication token, prefixed by Bearer: bearer \u003ctoken\u003e",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
 }
