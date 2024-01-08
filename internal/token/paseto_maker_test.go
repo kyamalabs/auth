@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createPasetoToken(t *testing.T, tokenAccess TokenAccess, duration time.Duration) (*utils.EthereumWallet, Maker, string) {
+func createPasetoToken(t *testing.T, tokenAccess Access, duration time.Duration) (*utils.EthereumWallet, Maker, string) {
 	ethereumWallet, err := utils.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, ethereumWallet)

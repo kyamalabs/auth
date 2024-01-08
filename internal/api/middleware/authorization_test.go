@@ -18,7 +18,7 @@ func TestAuthorizeAccount(t *testing.T) {
 		name            string
 		buildContext    func(t *testing.T, tokenMaker token.Maker) context.Context
 		walletAddress   string
-		tokenAccess     token.TokenAccess
+		tokenAccess     token.Access
 		accessibleRoles []token.Role
 		checkResponse   func(t *testing.T, payload *token.Payload, err error)
 	}{

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
 )
 
 const (
@@ -37,11 +36,6 @@ func ExtractMetadata(ctx context.Context) *Metadata {
 		if len(clientIPs) > 0 {
 			mtdt.ClientIP = clientIPs[0]
 		}
-	}
-
-	p, ok := peer.FromContext(ctx)
-	if ok {
-		mtdt.ClientIP = p.Addr.String()
 	}
 
 	return mtdt

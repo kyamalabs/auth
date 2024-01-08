@@ -15,7 +15,7 @@ const (
 	AuthorizationBearer = "bearer"
 )
 
-func AuthorizeAccount(ctx context.Context, walletAddress string, tokenMaker token.Maker, tokenAccess token.TokenAccess, accessibleRoles []token.Role) (*token.Payload, error) {
+func AuthorizeAccount(ctx context.Context, walletAddress string, tokenMaker token.Maker, tokenAccess token.Access, accessibleRoles []token.Role) (*token.Payload, error) {
 	mtdt, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("could not get metadata from incoming context")

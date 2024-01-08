@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kyamagames/auth/internal/api/middleware"
 	"github.com/kyamagames/auth/internal/cache"
 
 	"github.com/kyamagames/auth/internal/api/handler"
@@ -17,6 +19,8 @@ import (
 type Server struct {
 	handler.Handler
 }
+
+var once sync.Once
 
 func NewServer(config utils.Config) (*Server, error) {
 	connPool, err := pgxpool.New(context.Background(), config.DBSource)
@@ -33,6 +37,14 @@ func NewServer(config utils.Config) (*Server, error) {
 	redisCache, err := cache.NewRedisCache(config.RedisConnURL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create redis cache: %w", err)
+	}
+
+	var initializeLimitersErr error
+	once.Do(func() {
+		initializeLimitersErr = middleware.InitializeLimiters(config.RedisConnURL)
+	})
+	if initializeLimitersErr != nil {
+		return nil, fmt.Errorf("could not initialize rate limiters: %w", initializeLimitersErr)
 	}
 
 	server := &Server{

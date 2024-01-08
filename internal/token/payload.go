@@ -9,7 +9,7 @@ import (
 
 type Role string
 
-type TokenAccess string
+type Access string
 
 var ErrExpiredToken = errors.New("token is expired")
 
@@ -19,20 +19,20 @@ const (
 )
 
 const (
-	AccessToken  TokenAccess = "Access Token"
-	RefreshToken TokenAccess = "Refresh Token"
+	AccessToken  Access = "Access Token"
+	RefreshToken Access = "Refresh Token"
 )
 
 type Payload struct {
-	ID            uuid.UUID   `json:"id"`
-	WalletAddress string      `json:"wallet_address"`
-	Role          Role        `json:"role"`
-	TokenAccess   TokenAccess `json:"token_access"`
-	IssuedAt      time.Time   `json:"issued_at"`
-	ExpiresAt     time.Time   `json:"expires_at"`
+	ID            uuid.UUID `json:"id"`
+	WalletAddress string    `json:"wallet_address"`
+	Role          Role      `json:"role"`
+	TokenAccess   Access    `json:"token_access"`
+	IssuedAt      time.Time `json:"issued_at"`
+	ExpiresAt     time.Time `json:"expires_at"`
 }
 
-func NewPayload(walletAddress string, role Role, tokenAccess TokenAccess, duration time.Duration) (*Payload, error) {
+func NewPayload(walletAddress string, role Role, tokenAccess Access, duration time.Duration) (*Payload, error) {
 	tokenId, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err

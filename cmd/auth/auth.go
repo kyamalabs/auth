@@ -75,8 +75,12 @@ func runGrpcServer(config utils.Config) {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
-	grpcLogger := grpc.UnaryInterceptor(middleware.GrpcLogger)
-	grpcServer := grpc.NewServer(grpcLogger)
+	grpcInterceptor := grpc.ChainUnaryInterceptor(
+		middleware.GrpcLogger,
+		middleware.GrpcRateLimiter,
+	)
+
+	grpcServer := grpc.NewServer(grpcInterceptor)
 	pb.RegisterAuthServer(grpcServer, s)
 	reflection.Register(grpcServer)
 
@@ -128,6 +132,7 @@ func runGatewayServer(config utils.Config) {
 	mux.Handle("/swagger/", swaggerHandler)
 
 	handler := middleware.HTTPLogger(mux)
+	handler = middleware.HTTPRateLimiter(handler)
 
 	srv := &http.Server{
 		Handler:      handler,
