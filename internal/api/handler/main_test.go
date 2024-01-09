@@ -33,7 +33,7 @@ func newTestHandler(t *testing.T, store db.Store, cache cache.Cache) Handler {
 	return NewHandler(config, store, tokenMaker, cache)
 }
 
-func newContextWithBearerToken(t *testing.T, tokenMaker token.Maker, accountOwner string, role token.Role, tokenAccess token.TokenAccess, duration time.Duration) context.Context {
+func newContextWithBearerToken(t *testing.T, tokenMaker token.Maker, accountOwner string, role token.Role, tokenAccess token.Access, duration time.Duration) context.Context {
 	tk, _, err := tokenMaker.CreateToken(accountOwner, role, tokenAccess, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, tk)

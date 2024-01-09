@@ -4,13 +4,6 @@ import (
 	"context"
 
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
-)
-
-const (
-	grpcGatewayUserAgentHeader = "grpcgateway-user-agent"
-	userAgentHeader            = "user-agent"
-	xForwardedForHeader        = "x-forwarded-for"
 )
 
 type Metadata struct {
@@ -37,11 +30,6 @@ func ExtractMetadata(ctx context.Context) *Metadata {
 		if len(clientIPs) > 0 {
 			mtdt.ClientIP = clientIPs[0]
 		}
-	}
-
-	p, ok := peer.FromContext(ctx)
-	if ok {
-		mtdt.ClientIP = p.Addr.String()
 	}
 
 	return mtdt
