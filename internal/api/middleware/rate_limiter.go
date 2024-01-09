@@ -46,10 +46,10 @@ var rateLimits = map[string]rate{
 
 var limiters = make(map[string]*limiter.Limiter)
 
-func InitializeLimiters(redisConnURL string) error {
+func CreateLimiterRedisStore(redisConnURL string) (limiter.Store, error) {
 	opts, err := redis.ParseURL(redisConnURL)
 	if err != nil {
-		return fmt.Errorf("could not parse redis connection url: %w", err)
+		return nil, fmt.Errorf("could not parse redis connection url: %w", err)
 	}
 
 	rc := redis.NewClient(opts)
@@ -57,9 +57,13 @@ func InitializeLimiters(redisConnURL string) error {
 		Prefix: "api_rate_limiter",
 	})
 	if err != nil {
-		return fmt.Errorf("could not create a new redis rate limiter store: %w", err)
+		return nil, fmt.Errorf("could not create a new redis rate limiter store: %w", err)
 	}
 
+	return store, nil
+}
+
+func InitializeLimiters(store limiter.Store) error {
 	for _, rateLimit := range rateLimits {
 		_, exists := limiters[rateLimit.Identifier]
 		if exists {
@@ -97,6 +101,10 @@ func getLimiter(r rate) (*limiter.Limiter, error) {
 	return l, nil
 }
 
+var getLimiterContext = func(ctx context.Context, l *limiter.Limiter, key string) (limiter.Context, error) {
+	return l.Get(ctx, key)
+}
+
 func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	endpoint := info.FullMethod
 
@@ -117,7 +125,7 @@ func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 
 	logger = logger.With().Str("client_ip", mtdt.ClientIP).Logger()
 
-	c, err := l.Get(ctx, mtdt.ClientIP)
+	c, err := getLimiterContext(ctx, l, mtdt.ClientIP)
 	if err != nil {
 		logger.Error().Err(err).Msg("could not get rate limiter context")
 		return nil, status.Error(codes.Internal, InternalServerError)
@@ -130,7 +138,7 @@ func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 	)
 	err = grpc.SendHeader(ctx, headers)
 	if err != nil {
-		logger.Error().Msg("could not send rate limit headers")
+		logger.Error().Err(err).Msg("could not send rate limit headers")
 		return nil, status.Error(codes.Internal, InternalServerError)
 	}
 

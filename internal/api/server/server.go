@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/ulule/limiter/v3"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kyamagames/auth/internal/api/middleware"
 	"github.com/kyamagames/auth/internal/cache"
@@ -39,12 +41,9 @@ func NewServer(config utils.Config) (*Server, error) {
 		return nil, fmt.Errorf("cannot create redis cache: %w", err)
 	}
 
-	var initializeLimitersErr error
-	once.Do(func() {
-		initializeLimitersErr = middleware.InitializeLimiters(config.RedisConnURL)
-	})
-	if initializeLimitersErr != nil {
-		return nil, fmt.Errorf("could not initialize rate limiters: %w", initializeLimitersErr)
+	err = setupRateLimiter(config.RedisConnURL)
+	if err != nil {
+		return nil, err
 	}
 
 	server := &Server{
@@ -52,4 +51,25 @@ func NewServer(config utils.Config) (*Server, error) {
 	}
 
 	return server, nil
+}
+
+func setupRateLimiter(redisConnURL string) error {
+	var store limiter.Store
+	var createLimiterRedisStoreErr, initializeLimitersErr error
+
+	once.Do(func() {
+		store, createLimiterRedisStoreErr = middleware.CreateLimiterRedisStore(redisConnURL)
+		if createLimiterRedisStoreErr == nil {
+			initializeLimitersErr = middleware.InitializeLimiters(store)
+		}
+	})
+
+	if createLimiterRedisStoreErr != nil {
+		return fmt.Errorf("could not create limiter redis client: %w", createLimiterRedisStoreErr)
+	}
+	if initializeLimitersErr != nil {
+		return fmt.Errorf("could not initialize rate limiters: %w", initializeLimitersErr)
+	}
+
+	return nil
 }
