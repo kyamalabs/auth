@@ -3,6 +3,9 @@ package middleware
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -45,11 +48,12 @@ func TestInitializeLimiters(t *testing.T) {
 			rateLimits = tc.rateLimits
 			defer func() {
 				rateLimits = initialRateLimits
+				limiters = make(map[string]*limiter.Limiter)
 			}()
 
 			err := InitializeLimiters(store)
 			require.NoError(t, err)
-			require.Len(t, limiters, 1)
+			require.Len(t, limiters, tc.expectedNumLimiters)
 		})
 	}
 }
@@ -89,6 +93,7 @@ func TestGetEndpointRateLimit(t *testing.T) {
 			rateLimits = tc.rateLimits
 			defer func() {
 				rateLimits = initialRateLimits
+				limiters = make(map[string]*limiter.Limiter)
 			}()
 
 			rateLimit := getEndpointRateLimit(tc.endpoint)
@@ -108,6 +113,7 @@ func TestGetLimiter(t *testing.T) {
 	}
 	defer func() {
 		rateLimits = initialRateLimits
+		limiters = make(map[string]*limiter.Limiter)
 	}()
 
 	store := memory.NewStore()
@@ -228,6 +234,7 @@ func TestGrpcRateLimiter(t *testing.T) {
 			rateLimits = tc.rateLimits
 			defer func() {
 				rateLimits = initialRateLimits
+				limiters = make(map[string]*limiter.Limiter)
 			}()
 			err := InitializeLimiters(store)
 			require.NoError(t, err)
@@ -260,6 +267,73 @@ func TestGrpcRateLimiter(t *testing.T) {
 
 			require.Error(t, err)
 			require.ErrorContains(t, err, tc.expectedError)
+		})
+	}
+}
+
+func TestHTTPRateLimiter(t *testing.T) {
+	testCases := []struct {
+		name                 string
+		rateLimits           map[string]rate
+		clientIP             string
+		expectedResponseCode int
+	}{
+		{
+			name:                 "valid request",
+			rateLimits:           map[string]rate{defaultRateLimitIdentifier: {Limit: 1000, Period: time.Hour, Identifier: defaultRateLimitIdentifier}},
+			clientIP:             "127.0.0.1",
+			expectedResponseCode: http.StatusOK,
+		},
+		{
+			name:                 "exceeded rate limit",
+			rateLimits:           map[string]rate{defaultRateLimitIdentifier: {Limit: 0, Period: time.Hour, Identifier: defaultRateLimitIdentifier}},
+			clientIP:             "127.0.0.1",
+			expectedResponseCode: http.StatusTooManyRequests,
+		},
+		{
+			name:                 "could not get rate limiter",
+			rateLimits:           map[string]rate{},
+			clientIP:             "127.0.0.1",
+			expectedResponseCode: http.StatusInternalServerError,
+		},
+		{
+			name:                 "missing x-forwarded-for-header",
+			rateLimits:           map[string]rate{defaultRateLimitIdentifier: {Limit: 1000, Period: time.Hour, Identifier: defaultRateLimitIdentifier}},
+			clientIP:             "",
+			expectedResponseCode: http.StatusBadRequest,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Initialize default rate limiter
+			store := memory.NewStore()
+			initialRateLimits := rateLimits
+			rateLimits = tc.rateLimits
+			defer func() {
+				rateLimits = initialRateLimits
+				limiters = make(map[string]*limiter.Limiter)
+			}()
+			fmt.Println(rateLimits)
+			err := InitializeLimiters(store)
+			require.NoError(t, err)
+
+			req, err := http.NewRequest("GET", "/test", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			req.Header.Set(xForwardedForHeader, tc.clientIP)
+
+			res := httptest.NewRecorder()
+
+			HTTPRateLimiter(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+				res.WriteHeader(http.StatusOK)
+				_, err := res.Write([]byte("OK"))
+				require.NoError(t, err)
+			})).ServeHTTP(res, req)
+
+			require.Equal(t, tc.expectedResponseCode, res.Code)
 		})
 	}
 }

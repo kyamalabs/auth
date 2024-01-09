@@ -64,6 +64,7 @@ func CreateLimiterRedisStore(redisConnURL string) (limiter.Store, error) {
 }
 
 func InitializeLimiters(store limiter.Store) error {
+	limiters = make(map[string]*limiter.Limiter)
 	for _, rateLimit := range rateLimits {
 		_, exists := limiters[rateLimit.Identifier]
 		if exists {
