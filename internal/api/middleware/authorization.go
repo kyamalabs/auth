@@ -10,11 +10,6 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const (
-	AuthorizationHeader = "authorization"
-	AuthorizationBearer = "bearer"
-)
-
 func AuthorizeAccount(ctx context.Context, walletAddress string, tokenMaker token.Maker, tokenAccess token.Access, accessibleRoles []token.Role) (*token.Payload, error) {
 	mtdt, ok := metadata.FromIncomingContext(ctx)
 	if !ok {

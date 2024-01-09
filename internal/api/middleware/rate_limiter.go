@@ -26,17 +26,7 @@ type rate struct {
 	Identifier string
 }
 
-const (
-	contentTypeHeader          = "Content-Type"
-	applicationJSONValue       = "application/json"
-	defaultRateLimitIdentifier = "default_rate_limit_identifier"
-)
-
-const (
-	InternalServerError             string = "An unexpected error occurred while processing your request."
-	RateLimitExceededError          string = "Slow down! Too many requests. Try again shortly. Thank you!"
-	MissingXForwardedForHeaderError string = "X-Forwarded-For header is required for accurate processing."
-)
+const defaultRateLimitIdentifier = "default_rate_limit_identifier"
 
 var rateLimits = map[string]rate{
 	// default global rate limit:
