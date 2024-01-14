@@ -114,6 +114,7 @@ func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 		return nil, status.Error(codes.InvalidArgument, MissingXForwardedForHeaderError)
 	}
 
+	ctx = context.WithValue(ctx, clientIP, mtdt.ClientIP)
 	logger = logger.With().Str("client_ip", mtdt.ClientIP).Logger()
 
 	c, err := getLimiterContext(ctx, l, mtdt.ClientIP)
@@ -188,17 +189,12 @@ func HTTPRateLimiter(handler http.Handler) http.Handler {
 			return
 		}
 
-		clientIP := req.Header.Get(xForwardedForHeader)
-		if clientIP == "" {
-			logger.Error().Msg("could not extract client IP for rate limiting")
-			grpcError := status.Error(codes.InvalidArgument, MissingXForwardedForHeaderError)
-			httpError(res, grpcError, http.StatusBadRequest)
-			return
-		}
-
-		logger = logger.With().Str("client_ip", clientIP).Logger()
-
 		middleware := stdlib.NewMiddleware(l)
+
+		rateLimitKey := middleware.KeyGetter(req)
+		req = req.WithContext(context.WithValue(req.Context(), clientIP, rateLimitKey))
+
+		logger = logger.With().Str("client_ip", rateLimitKey).Logger()
 
 		middleware.OnLimitReached = func(w http.ResponseWriter, r *http.Request) {
 			logger.Error().Msg("rate limit exceeded for client IP")

@@ -27,10 +27,16 @@ func GrpcLogger(ctx context.Context, req any, info *grpc.UnaryServerInfo, handle
 		logger = log.Error().Err(err)
 	}
 
+	ip, ok := ctx.Value(clientIP).(string)
+	if !ok {
+		ip = "unknown"
+	}
+
 	logger.Str("protocol", "grpc").
 		Str("method", info.FullMethod).
 		Int("status_code", int(statusCode)).
 		Str("status_text", statusCode.String()).
+		Str("client_ip", ip).
 		Dur("duration", duration).
 		Msg("processed gRPC request")
 
@@ -68,11 +74,17 @@ func HTTPLogger(handler http.Handler) http.Handler {
 			logger = log.Error().Bytes("body", rec.Body)
 		}
 
+		ip, ok := req.Context().Value(clientIP).(string)
+		if !ok {
+			ip = "unknown"
+		}
+
 		logger.Str("protocol", "http").
 			Str("method", req.Method).
 			Str("path", req.RequestURI).
 			Int("status_code", rec.StatusCode).
 			Str("status_text", http.StatusText(rec.StatusCode)).
+			Str("client_ip", ip).
 			Dur("duration", duration).
 			Msg("processed HTTP request")
 	})
