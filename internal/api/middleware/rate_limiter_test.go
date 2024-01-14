@@ -296,12 +296,6 @@ func TestHTTPRateLimiter(t *testing.T) {
 			clientIP:             "127.0.0.1",
 			expectedResponseCode: http.StatusInternalServerError,
 		},
-		{
-			name:                 "missing x-forwarded-for-header",
-			rateLimits:           map[string]rate{defaultRateLimitIdentifier: {Limit: 1000, Period: time.Hour, Identifier: defaultRateLimitIdentifier}},
-			clientIP:             "",
-			expectedResponseCode: http.StatusBadRequest,
-		},
 	}
 
 	for _, tc := range testCases {

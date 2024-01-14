@@ -76,8 +76,8 @@ func runGrpcServer(config utils.Config) {
 	}
 
 	grpcInterceptor := grpc.ChainUnaryInterceptor(
-		middleware.GrpcLogger,
 		middleware.GrpcRateLimiter,
+		middleware.GrpcLogger,
 	)
 
 	grpcServer := grpc.NewServer(grpcInterceptor)
