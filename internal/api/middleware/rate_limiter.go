@@ -115,7 +115,6 @@ func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 	}
 
 	ctx = context.WithValue(ctx, clientIP, mtdt.ClientIP)
-
 	logger = logger.With().Str("client_ip", mtdt.ClientIP).Logger()
 
 	c, err := getLimiterContext(ctx, l, mtdt.ClientIP)
