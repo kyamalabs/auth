@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Update Shared Proto Definitions
-        uses: kyamalabs/action-open-pull-request-across-repositories@v0.1.0
+        uses: kyamalabs/action-open-pull-request-across-repositories@v0.1.1
         with:
           destination-repository: 'kyamalabs/proto'
           source-folders: 'api/pb,api/proto'
