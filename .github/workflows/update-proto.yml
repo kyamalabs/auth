@@ -22,7 +22,7 @@ jobs:
           destination_repository: 'kyamalabs/proto'
           source_folders: 'api/pb,api/proto'
           destination_folders: 'proto/auth/pb,proto/auth/proto'
-          destination_head_branch: 'auth-proto-update'
+          destination_head_branch: 'auth-proto-update-1'
           pr_title: 'feat: update auth service proto'
           commit_message: 'Update auth service proto'
           destination_base_branch: 'main'
