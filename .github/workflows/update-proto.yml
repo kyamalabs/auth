@@ -9,6 +9,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   update_shared_proto:
     runs-on: ubuntu-latest
@@ -18,9 +21,6 @@ jobs:
 
       - name: Update Shared Proto Definitions
         uses: kyamalabs/action-open-pull-request-across-repositories@v0.1.14
-        env:
-          GH_TOKEN: ${{ github.token }}
-          API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}
         with:
           destination_repository: 'kyamalabs/proto'
           source_folders: 'api/pb,api/proto'
@@ -30,3 +30,5 @@ jobs:
           commit_message: 'Update auth service proto'
           destination_base_branch: 'main'
           pull_request_reviewers: 'm16w'
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}
