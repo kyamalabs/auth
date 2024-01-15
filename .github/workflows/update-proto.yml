@@ -12,7 +12,7 @@ on:
 permissions: write-all
 
 env:
-  GITHUB_TOKEN: ${{ github.token }}
+  GITHUB_TOKEN: ${{ secrets.PROTO_UPDATE_TOKEN }}
 
 jobs:
   update_shared_proto:
