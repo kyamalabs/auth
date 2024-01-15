@@ -9,11 +9,6 @@ on:
       - main
   workflow_dispatch:
 
-permissions: write-all
-
-env:
-  GITHUB_TOKEN: ${{ secrets.PROTO_UPDATE_TOKEN }}
-
 jobs:
   update_shared_proto:
     runs-on: ubuntu-latest
@@ -22,15 +17,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Update Shared Proto Definitions
-        uses: kyamalabs/action-open-pull-request-across-repositories@v0.1.15
+        uses: kyamalabs/action-open-pull-request-across-repositories@v0.1.16
         with:
           destination_repository: 'kyamalabs/proto'
-          source_folders: 'api/pb,api/proto'
-          destination_folders: 'proto/auth,proto/auth'
+          source_folders: 'api/'
+          destination_folders: 'proto/auth/'
           destination_head_branch: 'auth-proto-update'
           pr_title: 'feat: update auth service proto'
           commit_message: 'Update auth service proto'
           destination_base_branch: 'main'
           pull_request_reviewers: 'm16w'
         env:
+          GITHUB_TOKEN: ${{ secrets.PROTO_UPDATE_TOKEN }}
           API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}
