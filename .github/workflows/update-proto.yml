@@ -11,6 +11,9 @@ on:
 
 permissions: write-all
 
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
 jobs:
   update_shared_proto:
     runs-on: ubuntu-latest
