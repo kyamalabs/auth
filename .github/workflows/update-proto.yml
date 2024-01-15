@@ -26,6 +26,7 @@ jobs:
           pr_title: 'feat: update auth service proto'
           commit_message: 'Update auth service proto'
           destination_base_branch: 'main'
+          pull_request_reviewers: 'm16w'
         env:
           GH_TOKEN: ${{ github.token }}
           API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}
