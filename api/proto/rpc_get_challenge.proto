@@ -8,7 +8,6 @@ message GetChallengeRequest {
   string wallet_address = 1;
 }
 
-// test
 message GetChallengeResponse {
   string challenge = 1;
 }
