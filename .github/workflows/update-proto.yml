@@ -1,0 +1,29 @@
+name: Update Shared Proto Definitions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  update_shared_proto:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update Shared Proto Definitions
+        uses: kyamalabs/action-open-pull-request-across-repositories@0.1.0
+        with:
+          destination-repository: 'kyamalabs/proto'
+          source-folders: 'api/pb,api/proto'
+          destination-folders: 'proto/auth/pb,proto/auth/proto'
+          destination-head-branch: 'auth-proto-update'
+          pr-title: 'Update auth service proto'
+          commit-message: 'Update auth service proto'
+          destination-base-branch: 'main'
+          pull-request-reviewers: 'm16w'
