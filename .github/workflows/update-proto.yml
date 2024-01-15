@@ -21,11 +21,12 @@ jobs:
         with:
           destination_repository: 'kyamalabs/proto'
           source_folders: 'api/pb,api/proto'
-          destination_folders: 'proto/auth/pb,proto/auth/proto'
+          destination_folders: 'proto/auth,proto/auth'
           destination_head_branch: 'auth-proto-update'
           pr_title: 'feat: update auth service proto'
           commit_message: 'Update auth service proto'
           destination_base_branch: 'main'
           pull_request_reviewers: 'm16w'
         env:
+          GH_TOKEN: ${{ github.token }}
           API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}
