@@ -29,4 +29,3 @@ jobs:
           pull_request_reviewers: 'm16w'
         env:
           API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}
-        shell: bash
