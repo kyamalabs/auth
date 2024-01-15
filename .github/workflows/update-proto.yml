@@ -19,11 +19,11 @@ jobs:
       - name: Update Shared Proto Definitions
         uses: kyamalabs/action-open-pull-request-across-repositories@v0.1.4
         with:
-          destination-repository: 'kyamalabs/proto'
-          source-folders: 'api/pb,api/proto'
-          destination-folders: 'proto/auth/pb,proto/auth/proto'
-          destination-head-branch: 'auth-proto-update'
-          pr-title: 'feat: update auth service proto'
-          commit-message: 'Update auth service proto'
-          destination-base-branch: 'main'
-          pull-request-reviewers: 'm16w'
+          destination_repository: 'kyamalabs/proto'
+          source_folders: 'api/pb,api/proto'
+          destination_folders: 'proto/auth/pb,proto/auth/proto'
+          destination_head_branch: 'auth-proto-update'
+          pr_title: 'feat: update auth service proto'
+          commit_message: 'Update auth service proto'
+          destination_base_branch: 'main'
+          pull_request_reviewers: 'm16w'
