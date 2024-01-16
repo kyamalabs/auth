@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -26,7 +23,6 @@ jobs:
           pr_title: 'feat: update auth service proto'
           commit_message: 'Update auth service proto'
           destination_base_branch: 'main'
-          pull_request_reviewers: 'm16w'
         env:
           GITHUB_TOKEN: ${{ secrets.PROTO_UPDATE_TOKEN }}
           API_TOKEN_GITHUB: ${{ secrets.PROTO_UPDATE_TOKEN }}

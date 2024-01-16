@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pb;
+
+import "session.proto";
+
+option go_package = "github.com/kyamagames/auth/pb";
+
+message RefreshAccessTokenRequest {
+  string wallet_address = 1;
+}
+
+message RefreshAccessTokenResponse {
+  Session session = 1;
+}

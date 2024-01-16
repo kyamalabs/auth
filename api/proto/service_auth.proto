@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package pb;
+
+import "rpc_get_challenge.proto";
+import "google/api/annotations.proto";
+import "rpc_verify_access_token.proto";
+import "rpc_authenticate_account.proto";
+import "rpc_refresh_access_token.proto";
+import "rpc_revoke_refresh_tokens.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/kyamagames/auth/pb";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Auth Service";
+    version: "0";
+    contact: {
+      name: "Kyama Games";
+      url: "https://kyamagames.com";
+    };
+  };
+  security_definitions: {
+    security: {
+      key: "bearer"
+      value: {
+        type: TYPE_API_KEY
+        in: IN_HEADER
+        name: "Authorization"
+        description: "Authentication token, prefixed by Bearer: bearer <token>"
+      }
+    }
+  };
+  security: {
+    security_requirement: {
+      key: "bearer"
+    }
+  };
+};
+
+service Auth {
+  rpc GetChallenge(GetChallengeRequest) returns (GetChallengeResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/challenge"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Get an authentication challenge to be used to authenticate the specified wallet address";
+      summary: "Get Account Authentication Challenge";
+      security: {};
+    };
+  }
+
+  rpc AuthenticateAccount(AuthenticateAccountRequest) returns (AuthenticateAccountResponse) {
+    option (google.api.http) = {
+      post: "/auth/accounts/authenticate"
+      body: "*"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Authenticate an account using its wallet address, a server generated challenge, and a signature.";
+      summary: "Authenticate Account";
+      security: {};
+    };
+  }
+
+  rpc VerifyAccessToken(VerifyAccessTokenRequest) returns (VerifyAccessTokenResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/verify-access-token"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Verify whether an access token is valid for a specified account.";
+      summary: "Verify Access Token";
+    };
+  }
+
+  rpc RefreshAccessToken(RefreshAccessTokenRequest) returns (RefreshAccessTokenResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/refresh-access-token"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Refresh an account's access token.";
+      summary: "Refresh Access Token";
+    };
+  }
+
+  rpc RevokeRefreshTokens(RevokeRefreshTokensRequest) returns (RevokeRefreshTokensResponse) {
+    option (google.api.http) = {
+      get: "/auth/accounts/revoke-refresh-tokens"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Revoke all refresh tokens associated with a given account.";
+      summary: "Revoke Refresh Tokens";
+    };
+  }
+}

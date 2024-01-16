@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/kyamagames/auth/pb";
+
+message AccessTokenPayload {
+  enum Role {
+    UNKNOWN = 0;
+    GAMER = 1;
+    ADMIN = 2;
+  }
+
+  string id = 1;
+  string wallet_address = 2;
+  Role role = 3;
+  google.protobuf.Timestamp issued_at = 4;
+  google.protobuf.Timestamp expires_at = 5;
+}

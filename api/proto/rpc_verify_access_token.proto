@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pb;
+
+import "access_token_payload.proto";
+
+option go_package = "github.com/kyamagames/auth/pb";
+
+message VerifyAccessTokenRequest {
+  string wallet_address = 1;
+}
+
+message VerifyAccessTokenResponse {
+  AccessTokenPayload payload = 1;
+}
