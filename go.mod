@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/brianvoe/gofakeit/v6 v6.26.4
-	github.com/ethereum/go-ethereum v1.13.8
+	github.com/ethereum/go-ethereum v1.13.10
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/google/uuid v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.0
