@@ -27,7 +27,7 @@ func GrpcLogger(ctx context.Context, req any, info *grpc.UnaryServerInfo, handle
 		logger = log.Error().Err(err)
 	}
 
-	ip, ok := ctx.Value(clientIP).(string)
+	ip, ok := ctx.Value(ClientIP).(string)
 	if !ok {
 		ip = "unknown"
 	}
@@ -74,7 +74,7 @@ func HTTPLogger(handler http.Handler) http.Handler {
 			logger = log.Error().Bytes("body", rec.Body)
 		}
 
-		ip, ok := req.Context().Value(clientIP).(string)
+		ip, ok := req.Context().Value(ClientIP).(string)
 		if !ok {
 			ip = "unknown"
 		}

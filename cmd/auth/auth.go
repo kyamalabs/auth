@@ -76,6 +76,7 @@ func runGrpcServer(config utils.Config) {
 	}
 
 	grpcInterceptor := grpc.ChainUnaryInterceptor(
+		middleware.GrpcExtractMetadata,
 		middleware.GrpcRateLimiter,
 		middleware.GrpcLogger,
 	)
@@ -133,6 +134,7 @@ func runGatewayServer(config utils.Config) {
 
 	handler := middleware.HTTPLogger(mux)
 	handler = middleware.HTTPRateLimiter(handler)
+	handler = middleware.HTTPExtractMetadata(handler)
 
 	srv := &http.Server{
 		Handler:      handler,

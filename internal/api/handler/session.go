@@ -32,14 +32,22 @@ func NewSession(ctx context.Context, accountOwner string, accountRole token.Role
 		return nil, fmt.Errorf("could not create refresh token token: %w", err)
 	}
 
-	metadata := middleware.ExtractMetadata(ctx)
+	clientIP, ok := ctx.Value(middleware.ClientIP).(string)
+	if !ok {
+		clientIP = "unknown"
+	}
+
+	userAgent, ok := ctx.Value(middleware.UserAgent).(string)
+	if !ok {
+		userAgent = "unknown"
+	}
 
 	session, err := store.CreateSession(ctx, db.CreateSessionParams{
 		ID:            refreshTokenPayload.ID,
 		WalletAddress: accountOwner,
 		RefreshToken:  refreshToken,
-		UserAgent:     metadata.UserAgent,
-		ClientIp:      metadata.ClientIP,
+		UserAgent:     userAgent,
+		ClientIp:      clientIP,
 		ExpiresAt:     refreshTokenPayload.ExpiresAt,
 	})
 	if err != nil {

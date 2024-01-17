@@ -2,81 +2,102 @@ package middleware
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
-	"github.com/kyamagames/auth/internal/token"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
 )
 
-func TestExtractMetadata(t *testing.T) {
+func TestGrpcExtractMetadata(t *testing.T) {
 	testCases := []struct {
-		name          string
-		buildContext  func(t *testing.T, tokenMaker token.Maker) context.Context
-		checkResponse func(t *testing.T, mtdt *Metadata)
+		name        string
+		ctx         context.Context
+		ctxKey      ReqContextKey
+		expectedCtx context.Context
 	}{
 		{
-			name: "Success - extracts grpcgateway-user-agent header",
-			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				md := metadata.MD{
-					grpcGatewayUserAgentHeader: []string{
-						"test_val",
-					},
-				}
-
-				return metadata.NewIncomingContext(context.Background(), md)
-			},
-			checkResponse: func(t *testing.T, mtdt *Metadata) {
-				require.NotEmpty(t, mtdt)
-
-				require.Equal(t, "test_val", mtdt.UserAgent)
-			},
+			name:        "set user-agent header",
+			ctx:         metadata.NewIncomingContext(context.Background(), metadata.Pairs(userAgentHeader, "testUserAgent")),
+			ctxKey:      UserAgent,
+			expectedCtx: context.WithValue(context.Background(), UserAgent, "testUserAgent"),
 		},
 		{
-			name: "Success - extracts user-agent header",
-			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				md := metadata.MD{
-					userAgentHeader: []string{
-						"test_val",
-					},
-				}
-
-				return metadata.NewIncomingContext(context.Background(), md)
-			},
-			checkResponse: func(t *testing.T, mtdt *Metadata) {
-				require.NotEmpty(t, mtdt)
-
-				require.Equal(t, "test_val", mtdt.UserAgent)
-			},
+			name:        "set grpcgateway-user-agent header",
+			ctx:         metadata.NewIncomingContext(context.Background(), metadata.Pairs(grpcGatewayUserAgentHeader, "testGrpcGatewayUserAgent")),
+			ctxKey:      UserAgent,
+			expectedCtx: context.WithValue(context.Background(), UserAgent, "testGrpcGatewayUserAgent"),
 		},
 		{
-			name: "Success - extracts x-forwarded-for header",
-			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				md := metadata.MD{
-					xForwardedForHeader: []string{
-						"test_val",
-					},
-				}
-
-				return metadata.NewIncomingContext(context.Background(), md)
-			},
-			checkResponse: func(t *testing.T, mtdt *Metadata) {
-				require.NotEmpty(t, mtdt)
-
-				require.Equal(t, "test_val", mtdt.ClientIP)
-			},
+			name:        "set x-forwarded-for header",
+			ctx:         metadata.NewIncomingContext(context.Background(), metadata.Pairs(xForwardedForHeader, "testClientIP")),
+			ctxKey:      ClientIP,
+			expectedCtx: context.WithValue(context.Background(), ClientIP, "testClientIP"),
 		},
 	}
 
-	for i := range testCases {
-		tc := testCases[i]
-
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tokenMaker := getTestTokenMaker(t)
-			ctx := tc.buildContext(t, tokenMaker)
+			_, err := GrpcExtractMetadata(tc.ctx, nil, nil, func(ctx context.Context, req interface{}) (interface{}, error) {
+				require.Equal(t, tc.expectedCtx.Value(tc.ctxKey), ctx.Value(tc.ctxKey))
 
-			mtdt := ExtractMetadata(ctx)
-			tc.checkResponse(t, mtdt)
+				return nil, nil
+			})
+
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestHTTPExtractMetadata(t *testing.T) {
+	tests := []struct {
+		name              string
+		headers           map[string]string
+		expectedUserAgent string
+		expectedClientIP  string
+	}{
+		{
+			name: "set user-agent header",
+			headers: map[string]string{
+				userAgentHeader: "testUserAgent",
+			},
+			expectedUserAgent: "testUserAgent",
+		},
+		{
+			name: "set x-forwarded-for header",
+			headers: map[string]string{
+				xForwardedForHeader: "testClientIP",
+			},
+			expectedClientIP: "testClientIP",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/test", nil)
+
+			for key, val := range tt.headers {
+				req.Header.Set(key, val)
+			}
+
+			rr := httptest.NewRecorder()
+
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				userAgent := r.Context().Value(UserAgent)
+				clientIP := r.Context().Value(ClientIP)
+
+				if tt.expectedUserAgent != "" {
+					require.Equal(t, tt.expectedUserAgent, userAgent)
+				}
+
+				if tt.expectedClientIP != "" {
+					require.Equal(t, tt.expectedClientIP, clientIP)
+				}
+			})
+
+			httpHandler := HTTPExtractMetadata(handler)
+			httpHandler.ServeHTTP(rr, req)
 		})
 	}
 }

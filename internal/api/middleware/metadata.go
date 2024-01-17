@@ -2,35 +2,46 @@ package middleware
 
 import (
 	"context"
+	"net/http"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
-type Metadata struct {
-	UserAgent string `json:"user_agent"`
-	ClientIP  string `json:"client_ip"`
-}
-
-func ExtractMetadata(ctx context.Context) *Metadata {
-	mtdt := &Metadata{}
-
+func GrpcExtractMetadata(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
-		userAgents := md.Get(grpcGatewayUserAgentHeader)
+		userAgents := md.Get(userAgentHeader)
 		if len(userAgents) > 0 {
-			mtdt.UserAgent = userAgents[0]
+			ctx = context.WithValue(ctx, UserAgent, userAgents[0])
 		}
 
-		userAgents = md.Get(userAgentHeader)
+		userAgents = md.Get(grpcGatewayUserAgentHeader)
 		if len(userAgents) > 0 {
-			mtdt.UserAgent = userAgents[0]
+			ctx = context.WithValue(ctx, UserAgent, userAgents[0])
 		}
 
 		clientIPs := md.Get(xForwardedForHeader)
 		if len(clientIPs) > 0 {
-			mtdt.ClientIP = clientIPs[0]
+			ctx = context.WithValue(ctx, ClientIP, clientIPs[0])
 		}
 	}
 
-	return mtdt
+	result, err := handler(ctx, req)
+
+	return result, err
+}
+
+func HTTPExtractMetadata(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if userAgentHeaderVal := req.Header.Get(userAgentHeader); userAgentHeaderVal != "" {
+			req = req.WithContext(context.WithValue(req.Context(), UserAgent, userAgentHeaderVal))
+		}
+
+		if xForwardedForHeaderVal := req.Header.Get(xForwardedForHeader); xForwardedForHeaderVal != "" {
+			req = req.WithContext(context.WithValue(req.Context(), ClientIP, xForwardedForHeaderVal))
+		}
+
+		handler.ServeHTTP(res, req)
+	})
 }
