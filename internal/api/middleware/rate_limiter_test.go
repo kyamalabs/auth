@@ -241,7 +241,10 @@ func TestGrpcRateLimiter(t *testing.T) {
 
 			// add x-forwarded header to incoming context
 			ctx := grpc.NewContextWithServerTransportStream(context.Background(), &mockServerTransportStream{})
-			ctxWithHeader := metadata.NewIncomingContext(ctx, metadata.Pairs(xForwardedForHeader, tc.clientIP))
+			if tc.clientIP != "" {
+				ctx = context.WithValue(ctx, ClientIP, tc.clientIP)
+			}
+			ctxWithHeader := metadata.NewIncomingContext(ctx, metadata.Pairs())
 
 			initialGetLimiterContext := getLimiterContext
 			getLimiterContext = func(ctx context.Context, l *limiter.Limiter, key string) (limiter.Context, error) {

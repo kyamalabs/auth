@@ -18,8 +18,9 @@ const (
 	MissingXForwardedForHeaderError string = "X-Forwarded-For header is required for accurate processing."
 )
 
-type RedisKey string
+type ReqContextKey string
 
 const (
-	clientIP RedisKey = "client_ip"
+	ClientIP  ReqContextKey = "client_ip"
+	UserAgent ReqContextKey = "user_agent"
 )
