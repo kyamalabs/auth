@@ -24,5 +24,5 @@ type ReqContextKey string
 const (
 	ClientIP              ReqContextKey = "client_ip"
 	UserAgent             ReqContextKey = "user_agent"
-	ServiceAuthentication ReqContextKey = "service_autentication"
+	ServiceAuthentication ReqContextKey = "service_authentication"
 )
