@@ -25,6 +25,11 @@ func GrpcExtractMetadata(ctx context.Context, req any, _ *grpc.UnaryServerInfo, 
 		if len(clientIPs) > 0 {
 			ctx = context.WithValue(ctx, ClientIP, clientIPs[0])
 		}
+
+		serviceAuthentications := md.Get(xServiceAuthenticationHeader)
+		if len(serviceAuthentications) > 0 {
+			ctx = context.WithValue(ctx, ServiceAuthentication, serviceAuthentications[0])
+		}
 	}
 
 	result, err := handler(ctx, req)
@@ -40,6 +45,10 @@ func HTTPExtractMetadata(handler http.Handler) http.Handler {
 
 		if xForwardedForHeaderVal := req.Header.Get(xForwardedForHeader); xForwardedForHeaderVal != "" {
 			req = req.WithContext(context.WithValue(req.Context(), ClientIP, xForwardedForHeaderVal))
+		}
+
+		if xServiceAuthenticationHeaderVal := req.Header.Get(xServiceAuthenticationHeader); xServiceAuthenticationHeaderVal != "" {
+			req = req.WithContext(context.WithValue(req.Context(), ServiceAuthentication, xServiceAuthenticationHeaderVal))
 		}
 
 		handler.ServeHTTP(res, req)

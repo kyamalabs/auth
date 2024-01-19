@@ -35,6 +35,12 @@ func TestGrpcExtractMetadata(t *testing.T) {
 			ctxKey:      ClientIP,
 			expectedCtx: context.WithValue(context.Background(), ClientIP, "testClientIP"),
 		},
+		{
+			name:        "set x-service-authentication header",
+			ctx:         metadata.NewIncomingContext(context.Background(), metadata.Pairs(xServiceAuthenticationHeader, "some service auth header")),
+			ctxKey:      ServiceAuthentication,
+			expectedCtx: context.WithValue(context.Background(), ServiceAuthentication, "some service auth header"),
+		},
 	}
 
 	for _, tc := range testCases {
@@ -52,10 +58,11 @@ func TestGrpcExtractMetadata(t *testing.T) {
 
 func TestHTTPExtractMetadata(t *testing.T) {
 	tests := []struct {
-		name              string
-		headers           map[string]string
-		expectedUserAgent string
-		expectedClientIP  string
+		name                          string
+		headers                       map[string]string
+		expectedUserAgent             string
+		expectedClientIP              string
+		expectedServiceAuthentication string
 	}{
 		{
 			name: "set user-agent header",
@@ -70,6 +77,13 @@ func TestHTTPExtractMetadata(t *testing.T) {
 				xForwardedForHeader: "testClientIP",
 			},
 			expectedClientIP: "testClientIP",
+		},
+		{
+			name: "set x-service-authentication header",
+			headers: map[string]string{
+				xServiceAuthenticationHeader: "some service auth header",
+			},
+			expectedServiceAuthentication: "some service auth header",
 		},
 	}
 
@@ -86,6 +100,7 @@ func TestHTTPExtractMetadata(t *testing.T) {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				userAgent := r.Context().Value(UserAgent)
 				clientIP := r.Context().Value(ClientIP)
+				serviceAuthentication := r.Context().Value(ServiceAuthentication)
 
 				if tt.expectedUserAgent != "" {
 					require.Equal(t, tt.expectedUserAgent, userAgent)
@@ -93,6 +108,10 @@ func TestHTTPExtractMetadata(t *testing.T) {
 
 				if tt.expectedClientIP != "" {
 					require.Equal(t, tt.expectedClientIP, clientIP)
+				}
+
+				if tt.expectedServiceAuthentication != "" {
+					require.Equal(t, tt.expectedServiceAuthentication, serviceAuthentication)
 				}
 			})
 
