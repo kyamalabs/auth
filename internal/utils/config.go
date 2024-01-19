@@ -7,16 +7,18 @@ import (
 )
 
 type Config struct {
-	Environment          string        `mapstructure:"ENVIRONMENT"`
-	DBDriver             string        `mapstructure:"DB_DRIVER"`
-	DBSource             string        `mapstructure:"DB_SOURCE"`
-	RedisConnURL         string        `mapstructure:"REDIS_CONN_URL"`
-	DBMigrationURL       string        `mapstructure:"DB_MIGRATION_URL"`
-	HTTPServerAddress    string        `mapstructure:"HTTP_SERVER_ADDRESS"`
-	GRPCServerAddress    string        `mapstructure:"GRPC_SERVER_ADDRESS"`
-	TokenSymmetricKey    string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
-	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
-	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
+	Environment            string        `mapstructure:"ENVIRONMENT"`
+	DBDriver               string        `mapstructure:"DB_DRIVER"`
+	DBSource               string        `mapstructure:"DB_SOURCE"`
+	RedisConnURL           string        `mapstructure:"REDIS_CONN_URL"`
+	DBMigrationURL         string        `mapstructure:"DB_MIGRATION_URL"`
+	HTTPServerAddress      string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	GRPCServerAddress      string        `mapstructure:"GRPC_SERVER_ADDRESS"`
+	TokenSymmetricKey      string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	ServiceAuthPublicKeys  []string      `mapstructure:"SERVICE_AUTH_PUBLIC_KEYS"`
+	ServiceAuthPrivateKeys []string      `mapstructure:"SERVICE_AUTH_PRIVATE_KEYS"`
+	AccessTokenDuration    time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	RefreshTokenDuration   time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
@@ -25,6 +27,7 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
+	viper.SetTypeByDefaultValue(true)
 
 	err = viper.ReadInConfig()
 	if err != nil {
