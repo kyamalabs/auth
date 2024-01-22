@@ -7,6 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+	db "github.com/kyamagames/auth/internal/db/sqlc"
+
 	"github.com/kyamagames/auth/internal/cache"
 	pkgMiddleware "github.com/kyamagames/auth/pkg/middleware"
 
@@ -43,13 +46,19 @@ func main() {
 
 	runDBMigration(config.DBMigrationURL, config.DBSource)
 
+	connPool, err := pgxpool.New(context.Background(), config.DBSource)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot connect to db")
+	}
+	store := db.NewStore(connPool)
+
 	redisCache, err := cache.NewRedisCache(config.RedisConnURL)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create redis cache")
 	}
 
-	go runGatewayServer(config, redisCache)
-	runGrpcServer(config, redisCache)
+	go runGatewayServer(config, store, redisCache)
+	runGrpcServer(config, store, redisCache)
 }
 
 func setupLogger(config utils.Config) {
@@ -77,8 +86,8 @@ func runDBMigration(migrationURL string, dbSource string) {
 	log.Info().Msg("db migrated successfully")
 }
 
-func runGrpcServer(config utils.Config, cache cache.Cache) {
-	s, err := server.NewServer(config)
+func runGrpcServer(config utils.Config, store db.Store, cache cache.Cache) {
+	s, err := server.NewServer(config, store, cache)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
@@ -109,8 +118,8 @@ func runGrpcServer(config utils.Config, cache cache.Cache) {
 	}
 }
 
-func runGatewayServer(config utils.Config, cache cache.Cache) {
-	s, err := server.NewServer(config)
+func runGatewayServer(config utils.Config, store db.Store, cache cache.Cache) {
+	s, err := server.NewServer(config, store, cache)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
