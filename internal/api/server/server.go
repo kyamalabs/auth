@@ -1,13 +1,11 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"sync"
 
 	"github.com/ulule/limiter/v3"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kyamagames/auth/internal/api/middleware"
 	"github.com/kyamagames/auth/internal/cache"
 
@@ -24,21 +22,10 @@ type Server struct {
 
 var once sync.Once
 
-func NewServer(config utils.Config) (*Server, error) {
-	connPool, err := pgxpool.New(context.Background(), config.DBSource)
-	if err != nil {
-		return nil, fmt.Errorf("cannot connect to db: %w", err)
-	}
-	store := db.NewStore(connPool)
-
+func NewServer(config utils.Config, store db.Store, cache cache.Cache) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
-	}
-
-	redisCache, err := cache.NewRedisCache(config.RedisConnURL)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create redis cache: %w", err)
 	}
 
 	err = setupRateLimiter(config.RedisConnURL)
@@ -47,7 +34,7 @@ func NewServer(config utils.Config) (*Server, error) {
 	}
 
 	server := &Server{
-		Handler: handler.NewHandler(config, store, tokenMaker, redisCache),
+		Handler: handler.NewHandler(config, store, tokenMaker, cache),
 	}
 
 	return server, nil

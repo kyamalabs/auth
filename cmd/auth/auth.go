@@ -7,6 +7,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+	db "github.com/kyamagames/auth/internal/db/sqlc"
+
+	"github.com/kyamagames/auth/internal/cache"
+	pkgMiddleware "github.com/kyamagames/auth/pkg/middleware"
+
 	"github.com/kyamagames/auth/internal/api/middleware"
 
 	"github.com/kyamagames/auth/internal/api/server"
@@ -40,8 +46,19 @@ func main() {
 
 	runDBMigration(config.DBMigrationURL, config.DBSource)
 
-	go runGatewayServer(config)
-	runGrpcServer(config)
+	connPool, err := pgxpool.New(context.Background(), config.DBSource)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot connect to db")
+	}
+	store := db.NewStore(connPool)
+
+	redisCache, err := cache.NewRedisCache(config.RedisConnURL)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot create redis cache")
+	}
+
+	go runGatewayServer(config, store, redisCache)
+	runGrpcServer(config, store, redisCache)
 }
 
 func setupLogger(config utils.Config) {
@@ -69,14 +86,18 @@ func runDBMigration(migrationURL string, dbSource string) {
 	log.Info().Msg("db migrated successfully")
 }
 
-func runGrpcServer(config utils.Config) {
-	s, err := server.NewServer(config)
+func runGrpcServer(config utils.Config, store db.Store, cache cache.Cache) {
+	s, err := server.NewServer(config, store, cache)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
 	grpcInterceptor := grpc.ChainUnaryInterceptor(
 		middleware.GrpcExtractMetadata,
+		(&pkgMiddleware.AuthenticateServiceConfig{
+			Cache:                 cache,
+			ServiceAuthPublicKeys: config.ServiceAuthPublicKeys,
+		}).AuthenticateServiceGrpc,
 		middleware.GrpcRateLimiter,
 		middleware.GrpcLogger,
 	)
@@ -97,8 +118,8 @@ func runGrpcServer(config utils.Config) {
 	}
 }
 
-func runGatewayServer(config utils.Config) {
-	s, err := server.NewServer(config)
+func runGatewayServer(config utils.Config, store db.Store, cache cache.Cache) {
+	s, err := server.NewServer(config, store, cache)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
@@ -134,6 +155,10 @@ func runGatewayServer(config utils.Config) {
 
 	handler := middleware.HTTPLogger(mux)
 	handler = middleware.HTTPRateLimiter(handler)
+	handler = pkgMiddleware.AuthenticateServiceHTTP(handler, &pkgMiddleware.AuthenticateServiceConfig{
+		Cache:                 cache,
+		ServiceAuthPublicKeys: config.ServiceAuthPublicKeys,
+	})
 	handler = middleware.HTTPExtractMetadata(handler)
 
 	srv := &http.Server{
