@@ -6,12 +6,12 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
-func createPasetoToken(t *testing.T, tokenAccess Access, duration time.Duration) (*utils.EthereumWallet, Maker, string) {
-	ethereumWallet, err := utils.NewEthereumWallet()
+func createPasetoToken(t *testing.T, tokenAccess Access, duration time.Duration) (*util.EthereumWallet, Maker, string) {
+	ethereumWallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, ethereumWallet)
 

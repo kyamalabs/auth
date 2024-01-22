@@ -13,7 +13,7 @@ import (
 
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 )
 
 type Server struct {
@@ -22,7 +22,7 @@ type Server struct {
 
 var once sync.Once
 
-func NewServer(config utils.Config, store db.Store, cache cache.Cache) (*Server, error) {
+func NewServer(config util.Config, store db.Store, cache cache.Cache) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)

@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
 func newRedisCache(t *testing.T) Cache {
-	config, err := utils.LoadConfig("../../")
+	config, err := util.LoadConfig("../../")
 	require.NoError(t, err)
 	require.NotEmpty(t, config)
 
