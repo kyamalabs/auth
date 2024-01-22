@@ -44,7 +44,7 @@ func CreateLimiterRedisStore(redisConnURL string) (limiter.Store, error) {
 
 	rc := redis.NewClient(opts)
 	store, err := redisStore.NewStoreWithOptions(rc, limiter.StoreOptions{
-		Prefix: "api_rate_limiter",
+		Prefix: "api-rate-limiter",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create a new redis rate limiter store: %w", err)
