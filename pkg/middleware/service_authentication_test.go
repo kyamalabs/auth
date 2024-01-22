@@ -33,7 +33,7 @@ func TestAuthenticateService(t *testing.T) {
 		{
 			name:                  "successfully authenticates service",
 			inputContext:          context.WithValue(context.Background(), middleware.ServiceAuthentication, validPayload),
-			expectedResultContext: context.WithValue(context.WithValue(context.Background(), middleware.ServiceAuthentication, validPayload), AuthenticatedService, "users"),
+			expectedResultContext: context.WithValue(context.WithValue(context.Background(), middleware.ServiceAuthentication, validPayload), middleware.AuthenticatedService, "users"),
 			buildStubs: func(cache *mockcache.MockCache) {
 				cache.EXPECT().
 					Get(gomock.Any(), gomock.Any()).

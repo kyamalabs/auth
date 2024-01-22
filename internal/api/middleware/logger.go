@@ -32,6 +32,11 @@ func GrpcLogger(ctx context.Context, req any, info *grpc.UnaryServerInfo, handle
 		ip = "unknown"
 	}
 
+	callingService, ok := ctx.Value(AuthenticatedService).(string)
+	if ok {
+		logger.Str("calling_service", callingService)
+	}
+
 	logger.Str("protocol", "grpc").
 		Str("method", info.FullMethod).
 		Int("status_code", int(statusCode)).
@@ -77,6 +82,11 @@ func HTTPLogger(handler http.Handler) http.Handler {
 		ip, ok := req.Context().Value(ClientIP).(string)
 		if !ok {
 			ip = "unknown"
+		}
+
+		callingService, ok := req.Context().Value(AuthenticatedService).(string)
+		if ok {
+			logger.Str("calling_service", callingService)
 		}
 
 		logger.Str("protocol", "http").

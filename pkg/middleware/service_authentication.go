@@ -18,10 +18,9 @@ import (
 )
 
 const (
-	serviceAuthenticationNonceLength                              = 10
-	serviceAuthenticationPayloadDuration                          = time.Minute
-	serviceAuthenticationCacheKeyPrefix                           = "service-auth"
-	AuthenticatedService                 middleware.ReqContextKey = "authenticated_service"
+	serviceAuthenticationNonceLength     = 10
+	serviceAuthenticationPayloadDuration = time.Minute
+	serviceAuthenticationCacheKeyPrefix  = "service-auth"
 )
 
 type AuthenticateServiceConfig struct {
@@ -111,7 +110,7 @@ func authenticateService(ctx context.Context, c *AuthenticateServiceConfig) cont
 	}
 
 	// add authenticated service name to request context
-	ctx = context.WithValue(ctx, AuthenticatedService, strings.ToLower(strings.TrimSpace(serviceName)))
+	ctx = context.WithValue(ctx, middleware.AuthenticatedService, strings.ToLower(strings.TrimSpace(serviceName)))
 
 	return ctx
 }
