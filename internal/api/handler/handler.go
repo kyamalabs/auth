@@ -5,18 +5,18 @@ import (
 	"github.com/kyamagames/auth/internal/cache"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 )
 
 type Handler struct {
 	pb.UnimplementedAuthServer
-	config     utils.Config
+	config     util.Config
 	store      db.Store
 	tokenMaker token.Maker
 	cache      cache.Cache
 }
 
-func NewHandler(config utils.Config, store db.Store, tokenMaker token.Maker, cache cache.Cache) Handler {
+func NewHandler(config util.Config, store db.Store, tokenMaker token.Maker, cache cache.Cache) Handler {
 	return Handler{
 		config:     config,
 		store:      store,

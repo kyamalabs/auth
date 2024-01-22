@@ -11,7 +11,7 @@ import (
 
 	"github.com/kyamagames/auth/internal/api/middleware"
 	"github.com/kyamagames/auth/internal/cache"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/rs/zerolog/log"
 
 	"google.golang.org/grpc"
@@ -75,13 +75,13 @@ func authenticateService(ctx context.Context, c *AuthenticateServiceConfig) cont
 	isSignatureValid := false
 	payloadVerificationMsg := fmt.Sprintf("%s.%s.%s", serviceName, splitServiceAuthenticationVal[1], nonce)
 	for _, publicKeyStr := range c.ServiceAuthPublicKeys {
-		publicKey, err := utils.ParsePublicKeyFromPEM(publicKeyStr)
+		publicKey, err := util.ParsePublicKeyFromPEM(publicKeyStr)
 		if err != nil {
 			logger.Warn().Str("pem", publicKeyStr).Msg("could not parse public key from PEM")
 			return ctx
 		}
 
-		isSignatureValid, err = utils.ECDSAVerify([]byte(payloadVerificationMsg), publicKey, signature)
+		isSignatureValid, err = util.ECDSAVerify([]byte(payloadVerificationMsg), publicKey, signature)
 		if err != nil {
 			logger.Warn().Str("pem", publicKeyStr).Msg("could not verify service authentication signature")
 			return ctx
@@ -129,7 +129,7 @@ func AuthenticateServiceHTTP(handler http.Handler, config *AuthenticateServiceCo
 }
 
 func GenerateServiceAuthenticationPayload(serviceName string, serviceAuthPrivateKeys []string) (string, error) {
-	nonce, err := utils.GenerateRandomAlphanumericString(serviceAuthenticationNonceLength)
+	nonce, err := util.GenerateRandomAlphanumericString(serviceAuthenticationNonceLength)
 	if err != nil {
 		log.Error().Err(err).Msg("could not generate service authentication nonce")
 		return "", err
@@ -143,14 +143,14 @@ func GenerateServiceAuthenticationPayload(serviceName string, serviceAuthPrivate
 		return "", errors.New("service authentication private keys not provided")
 	}
 
-	privateKey, err := utils.ParsePrivateKeyFromPEM(serviceAuthPrivateKeys[len(serviceAuthPrivateKeys)-1])
+	privateKey, err := util.ParsePrivateKeyFromPEM(serviceAuthPrivateKeys[len(serviceAuthPrivateKeys)-1])
 	if err != nil {
 		log.Error().Err(err).Msg("could not parse private key from PEM")
 		return "", err
 	}
 
 	payloadSignedMsg := fmt.Sprintf("%s.%s.%s", serviceName, currentUTCTimeMillisStr, nonce)
-	signature, err := utils.ECDSASign([]byte(payloadSignedMsg), privateKey)
+	signature, err := util.ECDSASign([]byte(payloadSignedMsg), privateKey)
 	if err != nil {
 		log.Error().Err(err).Msg("could not sign service authentication payload")
 		return "", err

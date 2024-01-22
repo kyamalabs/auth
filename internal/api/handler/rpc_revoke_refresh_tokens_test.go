@@ -12,13 +12,13 @@ import (
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
 
 func generateTestRevokeRefreshTokensReqParams(t *testing.T) *pb.RevokeRefreshTokensRequest {
-	wallet, err := utils.NewEthereumWallet()
+	wallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, wallet)
 
@@ -120,7 +120,7 @@ func TestRevokeRefreshTokensAPI(t *testing.T) {
 					Return(testCt, nil)
 			},
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
-				wallet, err := utils.NewEthereumWallet()
+				wallet, err := util.NewEthereumWallet()
 				require.NoError(t, err)
 				require.NotEmpty(t, wallet)
 

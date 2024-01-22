@@ -13,13 +13,13 @@ import (
 	"github.com/kyamagames/auth/internal/cache"
 
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
 
 func TestGenerateChallenge(t *testing.T) {
-	wallet, err := utils.NewEthereumWallet()
+	wallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 
 	testCases := []struct {
@@ -80,7 +80,7 @@ func TestGenerateChallenge(t *testing.T) {
 }
 
 func TestFetchChallenge(t *testing.T) {
-	wallet, err := utils.NewEthereumWallet()
+	wallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 
 	testCases := []struct {

@@ -26,7 +26,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/kyamagames/auth/api/pb"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -37,7 +37,7 @@ import (
 )
 
 func main() {
-	config, err := utils.LoadConfig(".")
+	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
@@ -61,7 +61,7 @@ func main() {
 	runGrpcServer(config, store, redisCache)
 }
 
-func setupLogger(config utils.Config) {
+func setupLogger(config util.Config) {
 	logger := log.Logger
 
 	if config.Environment == "development" {
@@ -86,7 +86,7 @@ func runDBMigration(migrationURL string, dbSource string) {
 	log.Info().Msg("db migrated successfully")
 }
 
-func runGrpcServer(config utils.Config, store db.Store, cache cache.Cache) {
+func runGrpcServer(config util.Config, store db.Store, cache cache.Cache) {
 	s, err := server.NewServer(config, store, cache)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
@@ -118,7 +118,7 @@ func runGrpcServer(config utils.Config, store db.Store, cache cache.Cache) {
 	}
 }
 
-func runGatewayServer(config utils.Config, store db.Store, cache cache.Cache) {
+func runGatewayServer(config util.Config, store db.Store, cache cache.Cache) {
 	s, err := server.NewServer(config, store, cache)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")

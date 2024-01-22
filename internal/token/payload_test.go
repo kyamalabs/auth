@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
 func createNewPayload(t *testing.T, duration time.Duration) *Payload {
-	ethereumWallet, err := utils.NewEthereumWallet()
+	ethereumWallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, ethereumWallet)
 

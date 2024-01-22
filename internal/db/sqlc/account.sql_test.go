@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createTestAccount(t *testing.T) (*utils.EthereumWallet, Account) {
-	testEthWallet, err := utils.NewEthereumWallet()
+func createTestAccount(t *testing.T) (*util.EthereumWallet, Account) {
+	testEthWallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, testEthWallet)
 

@@ -5,12 +5,12 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
 func getTestTokenMaker(t *testing.T) token.Maker {
-	config := utils.Config{
+	config := util.Config{
 		TokenSymmetricKey: gofakeit.LetterN(32),
 	}
 

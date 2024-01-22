@@ -17,7 +17,7 @@ import (
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
@@ -48,7 +48,7 @@ func EqCreateSessionParams(arg db.CreateSessionParams) gomock.Matcher {
 }
 
 func generateTestAuthenticateAccountReqParams(t *testing.T) *pb.AuthenticateAccountRequest {
-	wallet, err := utils.NewEthereumWallet()
+	wallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, wallet)
 
@@ -65,7 +65,7 @@ func generateTestAuthenticateAccountReqParams(t *testing.T) *pb.AuthenticateAcco
 	authChallenge, err := challenge.GenerateChallenge(context.Background(), cache, wallet.Address)
 	require.NoError(t, err)
 
-	signature, err := utils.SignMessageEthereum(wallet.PrivateKey, authChallenge)
+	signature, err := util.SignMessageEthereum(wallet.PrivateKey, authChallenge)
 	require.NoError(t, err)
 	require.NotEmpty(t, signature)
 

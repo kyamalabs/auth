@@ -7,13 +7,13 @@ import (
 	"github.com/kyamagames/auth/api/pb"
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
 
 func TestGetChallengeAPI(t *testing.T) {
-	wallet, err := utils.NewEthereumWallet()
+	wallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, wallet)
 

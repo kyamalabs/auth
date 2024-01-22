@@ -9,7 +9,7 @@ import (
 
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 )
 
 type Session struct {
@@ -21,7 +21,7 @@ type Session struct {
 	ExpiresAt           time.Time
 }
 
-func NewSession(ctx context.Context, accountOwner string, accountRole token.Role, config utils.Config, tokenMaker token.Maker, store db.Store) (*Session, error) {
+func NewSession(ctx context.Context, accountOwner string, accountRole token.Role, config util.Config, tokenMaker token.Maker, store db.Store) (*Session, error) {
 	accessToken, accessTokenPayload, err := tokenMaker.CreateToken(accountOwner, accountRole, token.AccessToken, config.AccessTokenDuration)
 	if err != nil {
 		return nil, fmt.Errorf("could not create access token: %w", err)

@@ -12,13 +12,13 @@ import (
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
 
 func generateTestRefreshAccessTokenReqParams(t *testing.T) *pb.RefreshAccessTokenRequest {
-	wallet, err := utils.NewEthereumWallet()
+	wallet, err := util.NewEthereumWallet()
 	require.NoError(t, err)
 	require.NotEmpty(t, wallet)
 

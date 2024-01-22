@@ -11,7 +11,7 @@ import (
 
 	"github.com/kyamagames/auth/api/pb"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -40,7 +40,7 @@ func (h *Handler) AuthenticateAccount(ctx context.Context, req *pb.AuthenticateA
 		return nil, status.Error(codes.InvalidArgument, InvalidChallengeError)
 	}
 
-	isSignatureValid, err := utils.IsEthereumSignatureValid(req.GetWalletAddress(), req.GetChallenge(), req.GetSignature())
+	isSignatureValid, err := util.IsEthereumSignatureValid(req.GetWalletAddress(), req.GetChallenge(), req.GetSignature())
 	if err != nil || !isSignatureValid {
 		logger.Error().Err(err).Msg("authentication challenge signature not valid")
 		return nil, status.Error(codes.InvalidArgument, SignatureVerificationError)

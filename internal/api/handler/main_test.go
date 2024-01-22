@@ -17,12 +17,12 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/utils"
+	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
 func newTestHandler(t *testing.T, store db.Store, cache cache.Cache) Handler {
-	config := utils.Config{
+	config := util.Config{
 		TokenSymmetricKey: gofakeit.LetterN(32),
 	}
 
