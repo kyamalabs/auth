@@ -96,9 +96,17 @@ var getLimiterContext = func(ctx context.Context, l *limiter.Limiter, key string
 	return l.Get(ctx, key)
 }
 
-func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	endpoint := info.FullMethod
+func shouldRateLimit(ctx context.Context) bool {
+	_, ok := ctx.Value(AuthenticatedService).(string)
+	return !ok
+}
 
+func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	if !shouldRateLimit(ctx) {
+		return handler(ctx, req)
+	}
+
+	endpoint := info.FullMethod
 	logger := log.With().Str("endpoint", endpoint).Logger()
 
 	rateLimit := getEndpointRateLimit(endpoint)
@@ -138,8 +146,7 @@ func GrpcRateLimiter(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 		return nil, status.Error(codes.ResourceExhausted, RateLimitExceededError)
 	}
 
-	result, err := handler(ctx, req)
-	return result, err
+	return handler(ctx, req)
 }
 
 type ErrorResponse struct {
@@ -175,8 +182,12 @@ func httpError(res http.ResponseWriter, grpcError error, httpStatusCode int) {
 
 func HTTPRateLimiter(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		endpoint := req.URL.Path
+		if !shouldRateLimit(req.Context()) {
+			handler.ServeHTTP(res, req)
+			return
+		}
 
+		endpoint := req.URL.Path
 		logger := log.With().Str("endpoint", endpoint).Logger()
 
 		rateLimit := getEndpointRateLimit(endpoint)
