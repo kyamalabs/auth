@@ -75,7 +75,7 @@ func HTTPLogger(handler http.Handler) http.Handler {
 		duration := time.Since(startTime)
 
 		logger := log.Info()
-		if rec.StatusCode != http.StatusOK {
+		if rec.StatusCode >= 400 && rec.StatusCode < 600 {
 			logger = log.Error().Bytes("body", rec.Body)
 		}
 
