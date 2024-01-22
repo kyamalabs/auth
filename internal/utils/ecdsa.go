@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -86,7 +87,7 @@ func ParsePrivateKeyFromPEM(privateKeyPEM string) (*ecdsa.PrivateKey, error) {
 
 	block, _ := pem.Decode([]byte(privateKeyPEM))
 	if block == nil {
-		return nil, fmt.Errorf("error decoding PEM block")
+		return nil, errors.New("error decoding PEM block")
 	}
 
 	privKey, err := x509.ParseECPrivateKey(block.Bytes)
