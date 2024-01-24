@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/kyamalabs/auth/compare/v0.1.1...v0.2.0) (2024-01-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename module path ([#36](https://github.com/kyamalabs/auth/issues/36))
+
+### Miscellaneous Chores
+
+* rename module path ([#36](https://github.com/kyamalabs/auth/issues/36)) ([d07e39c](https://github.com/kyamalabs/auth/commit/d07e39cd8f51c60bde767f561600adc564ac0898))
+
 ## [0.1.1](https://github.com/kyamalabs/auth/compare/v0.1.0...v0.1.1) (2024-01-24)
 
 
