@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kyamagames/auth/pkg/util"
 	"regexp"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/kyamagames/auth/internal/cache"
 

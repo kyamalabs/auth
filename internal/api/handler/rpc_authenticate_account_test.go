@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kyamagames/auth/pkg/util"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/brianvoe/gofakeit/v6"
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"

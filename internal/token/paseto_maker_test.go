@@ -1,9 +1,10 @@
 package token
 
 import (
-	"github.com/kyamagames/auth/pkg/util"
 	"testing"
 	"time"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"

@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"github.com/kyamagames/auth/pkg/util"
 	"testing"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/stretchr/testify/require"
 )

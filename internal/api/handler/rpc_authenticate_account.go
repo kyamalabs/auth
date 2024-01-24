@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/kyamagames/auth/internal/token"

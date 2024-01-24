@@ -2,9 +2,10 @@ package handler
 
 import (
 	"context"
-	"github.com/kyamagames/auth/pkg/util"
 	"testing"
 	"time"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/kyamagames/auth/api/pb"
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"

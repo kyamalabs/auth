@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kyamagames/auth/pkg/util"
 	"testing"
 	"time"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/kyamagames/auth/api/pb"

@@ -3,9 +3,10 @@ package handler
 import (
 	"context"
 	"errors"
-	"github.com/kyamagames/auth/pkg/util"
 	"testing"
 	"time"
+
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/google/uuid"
 	"github.com/kyamagames/auth/api/pb"
