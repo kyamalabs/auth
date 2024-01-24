@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyamagames/auth/pkg/util"
+
 	"github.com/google/uuid"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 

@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyamagames/auth/pkg/util"
+
 	"github.com/google/uuid"
 	"github.com/kyamagames/auth/api/pb"
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

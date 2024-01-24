@@ -10,10 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyamagames/auth/pkg/util"
+
 	"github.com/kyamagames/auth/internal/cache"
 
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

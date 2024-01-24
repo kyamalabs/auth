@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyamagames/auth/pkg/util"
+
 	"github.com/brianvoe/gofakeit/v6"
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
 	"github.com/kyamagames/auth/internal/challenge"
@@ -17,7 +19,6 @@ import (
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
