@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/kyamagames/auth/pkg/util"
 
 	"github.com/kyamagames/auth/internal/token"
 
@@ -11,7 +12,6 @@ import (
 
 	"github.com/kyamagames/auth/api/pb"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

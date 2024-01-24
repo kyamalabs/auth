@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"github.com/kyamagames/auth/pkg/util"
 	"testing"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	mockdb "github.com/kyamagames/auth/internal/db/mock"
 	db "github.com/kyamagames/auth/internal/db/sqlc"
 	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

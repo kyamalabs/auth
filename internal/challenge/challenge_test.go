@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kyamagames/auth/pkg/util"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,7 +14,6 @@ import (
 	"github.com/kyamagames/auth/internal/cache"
 
 	mockcache "github.com/kyamagames/auth/internal/cache/mock"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

@@ -1,11 +1,11 @@
 package token
 
 import (
+	"github.com/kyamagames/auth/pkg/util"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kyamagames/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
