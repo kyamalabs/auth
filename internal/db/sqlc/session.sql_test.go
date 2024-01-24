@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyamagames/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/token"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/kyamagames/auth/internal/cache"
+	"github.com/kyamalabs/auth/internal/cache"
 )
 
 const (

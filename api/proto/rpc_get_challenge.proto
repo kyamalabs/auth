@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "github.com/kyamagames/auth/pb";
+option go_package = "github.com/kyamalabs/auth/pb";
 
 message GetChallengeRequest {
   string wallet_address = 1;

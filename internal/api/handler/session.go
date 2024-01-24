@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyamagames/auth/internal/api/middleware"
+	"github.com/kyamalabs/auth/internal/api/middleware"
 
-	db "github.com/kyamagames/auth/internal/db/sqlc"
-	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
+	db "github.com/kyamalabs/auth/internal/db/sqlc"
+	"github.com/kyamalabs/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/util"
 )
 
 type Session struct {

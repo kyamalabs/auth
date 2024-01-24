@@ -23,13 +23,13 @@
 * fix dependabot include scope ([#6](https://github.com/kyamalabs/auth/issues/6)) ([efd4e46](https://github.com/kyamalabs/auth/commit/efd4e4643e0dd8bae5a036d5864d9fb018a1ae91))
 * log http request errors for 4xx/5xx status codes only ([#34](https://github.com/kyamalabs/auth/issues/34)) ([02f1afa](https://github.com/kyamalabs/auth/commit/02f1afa98fc210d5c1724c66cb252aac3ea1fc1f))
 
-## [0.1.0](https://github.com/kyamagames/auth/compare/v0.0.1...v0.1.0) (2023-12-28)
+## [0.1.0](https://github.com/kyamalabs/auth/compare/v0.0.1...v0.1.0) (2023-12-28)
 
 
 ### ⚠ BREAKING CHANGES
 
-* setup golang service ([#1](https://github.com/kyamagames/auth/issues/1))
+* setup golang service ([#1](https://github.com/kyamalabs/auth/issues/1))
 
 ### Miscellaneous Chores
 
-* setup golang service ([#1](https://github.com/kyamagames/auth/issues/1)) ([a1027de](https://github.com/kyamagames/auth/commit/a1027de7d26138ac0122fa89f7c26857872ace55))
+* setup golang service ([#1](https://github.com/kyamalabs/auth/issues/1)) ([a1027de](https://github.com/kyamalabs/auth/commit/a1027de7d26138ac0122fa89f7c26857872ace55))

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kyamagames/auth/internal/util"
+	"github.com/kyamalabs/auth/internal/util"
 	"github.com/rs/zerolog/log"
 
 	"github.com/jackc/pgx/v5/pgxpool"

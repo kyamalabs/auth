@@ -5,7 +5,7 @@ package pb;
 import "account.proto";
 import "session.proto";
 
-option go_package = "github.com/kyamagames/auth/pb";
+option go_package = "github.com/kyamalabs/auth/pb";
 
 message AuthenticateAccountRequest {
   string wallet_address = 1;

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyamagames/auth/internal/api/middleware"
-	mockcache "github.com/kyamagames/auth/internal/cache/mock"
+	"github.com/kyamalabs/auth/internal/api/middleware"
+	mockcache "github.com/kyamalabs/auth/internal/cache/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

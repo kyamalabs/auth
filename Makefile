@@ -44,8 +44,8 @@ else
 endif
 
 mock:
-	mockgen -package=mockdb -destination=internal/db/mock/store.go github.com/kyamagames/auth/internal/db/sqlc Store
-	mockgen -package=mockcache -destination=internal/cache/mock/cache.go github.com/kyamagames/auth/internal/cache Cache
+	mockgen -package=mockdb -destination=internal/db/mock/store.go github.com/kyamalabs/auth/internal/db/sqlc Store
+	mockgen -package=mockcache -destination=internal/cache/mock/cache.go github.com/kyamalabs/auth/internal/cache Cache
 
 sqlc:
 	sqlc generate

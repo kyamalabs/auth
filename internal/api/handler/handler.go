@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"github.com/kyamagames/auth/api/pb"
-	"github.com/kyamagames/auth/internal/cache"
-	db "github.com/kyamagames/auth/internal/db/sqlc"
-	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
+	"github.com/kyamalabs/auth/api/pb"
+	"github.com/kyamalabs/auth/internal/cache"
+	db "github.com/kyamalabs/auth/internal/db/sqlc"
+	"github.com/kyamalabs/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/util"
 )
 
 type Handler struct {

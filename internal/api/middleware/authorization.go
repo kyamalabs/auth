@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kyamagames/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/token"
 	"google.golang.org/grpc/metadata"
 )
 

@@ -4,7 +4,7 @@ package pb;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/kyamagames/auth/pb";
+option go_package = "github.com/kyamalabs/auth/pb";
 
 message AccessTokenPayload {
   enum Role {

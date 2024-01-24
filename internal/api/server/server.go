@@ -6,14 +6,14 @@ import (
 
 	"github.com/ulule/limiter/v3"
 
-	"github.com/kyamagames/auth/internal/api/middleware"
-	"github.com/kyamagames/auth/internal/cache"
+	"github.com/kyamalabs/auth/internal/api/middleware"
+	"github.com/kyamalabs/auth/internal/cache"
 
-	"github.com/kyamagames/auth/internal/api/handler"
+	"github.com/kyamalabs/auth/internal/api/handler"
 
-	db "github.com/kyamagames/auth/internal/db/sqlc"
-	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
+	db "github.com/kyamalabs/auth/internal/db/sqlc"
+	"github.com/kyamalabs/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/util"
 )
 
 type Server struct {
