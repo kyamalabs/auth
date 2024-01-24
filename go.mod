@@ -1,4 +1,4 @@
-module github.com/kyamagames/auth
+module github.com/kyamalabs/auth
 
 go 1.21.5
 
