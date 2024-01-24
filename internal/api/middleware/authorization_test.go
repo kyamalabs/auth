@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyamagames/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/token"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
 )

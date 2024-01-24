@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyamagames/auth/internal/util"
+	"github.com/kyamalabs/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 

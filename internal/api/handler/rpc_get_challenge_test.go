@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyamagames/auth/pkg/util"
+	"github.com/kyamalabs/auth/pkg/util"
 
-	"github.com/kyamagames/auth/api/pb"
-	mockcache "github.com/kyamagames/auth/internal/cache/mock"
-	mockdb "github.com/kyamagames/auth/internal/db/mock"
+	"github.com/kyamalabs/auth/api/pb"
+	mockcache "github.com/kyamalabs/auth/internal/cache/mock"
+	mockdb "github.com/kyamalabs/auth/internal/db/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

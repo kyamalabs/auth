@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyamagames/auth/pkg/util"
+	"github.com/kyamalabs/auth/pkg/util"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"

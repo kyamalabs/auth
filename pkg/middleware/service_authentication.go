@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kyamagames/auth/internal/api/middleware"
-	"github.com/kyamagames/auth/internal/cache"
-	"github.com/kyamagames/auth/internal/util"
+	"github.com/kyamalabs/auth/internal/api/middleware"
+	"github.com/kyamalabs/auth/internal/cache"
+	"github.com/kyamalabs/auth/internal/util"
 	"github.com/rs/zerolog/log"
 
 	"google.golang.org/grpc"

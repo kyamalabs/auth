@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	db "github.com/kyamagames/auth/internal/db/sqlc"
+	db "github.com/kyamalabs/auth/internal/db/sqlc"
 
-	"github.com/kyamagames/auth/internal/cache"
-	pkgMiddleware "github.com/kyamagames/auth/pkg/middleware"
+	"github.com/kyamalabs/auth/internal/cache"
+	pkgMiddleware "github.com/kyamalabs/auth/pkg/middleware"
 
-	"github.com/kyamagames/auth/internal/api/middleware"
+	"github.com/kyamalabs/auth/internal/api/middleware"
 
-	"github.com/kyamagames/auth/internal/api/server"
+	"github.com/kyamalabs/auth/internal/api/server"
 
 	"github.com/rakyll/statik/fs"
 
@@ -25,14 +25,14 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/kyamagames/auth/api/pb"
-	"github.com/kyamagames/auth/internal/util"
+	"github.com/kyamalabs/auth/api/pb"
+	"github.com/kyamalabs/auth/internal/util"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	_ "github.com/jackc/pgx/v5"
-	_ "github.com/kyamagames/auth/docs/statik"
+	_ "github.com/kyamalabs/auth/docs/statik"
 	"github.com/rs/zerolog/log"
 )
 

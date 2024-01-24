@@ -9,15 +9,15 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 
-	"github.com/kyamagames/auth/internal/api/middleware"
+	"github.com/kyamalabs/auth/internal/api/middleware"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/kyamagames/auth/internal/cache"
+	"github.com/kyamalabs/auth/internal/cache"
 
 	"github.com/brianvoe/gofakeit/v6"
-	db "github.com/kyamagames/auth/internal/db/sqlc"
-	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
+	db "github.com/kyamalabs/auth/internal/db/sqlc"
+	"github.com/kyamalabs/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 

@@ -3,16 +3,16 @@ package handler
 import (
 	"context"
 
-	"github.com/kyamagames/auth/pkg/util"
+	"github.com/kyamalabs/auth/pkg/util"
 
-	"github.com/kyamagames/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/token"
 
-	"github.com/kyamagames/auth/internal/challenge"
-	"github.com/kyamagames/auth/internal/validator"
+	"github.com/kyamalabs/auth/internal/challenge"
+	"github.com/kyamalabs/auth/internal/validator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
-	"github.com/kyamagames/auth/api/pb"
-	db "github.com/kyamagames/auth/internal/db/sqlc"
+	"github.com/kyamalabs/auth/api/pb"
+	db "github.com/kyamalabs/auth/internal/db/sqlc"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/kyamagames/auth/internal/token"
-	"github.com/kyamagames/auth/internal/util"
+	"github.com/kyamalabs/auth/internal/token"
+	"github.com/kyamalabs/auth/internal/util"
 	"github.com/stretchr/testify/require"
 )
 
