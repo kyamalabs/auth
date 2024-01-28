@@ -190,7 +190,7 @@ func HTTPRateLimiter(handler http.Handler) http.Handler {
 		endpoint := req.URL.Path
 		logger := log.With().Str("endpoint", endpoint).Logger()
 
-		rateLimit := getEndpointRateLimit(endpoint)
+		rateLimit := getEndpointRateLimit(fmt.Sprintf("%s:%s", req.Method, endpoint))
 		l, err := getLimiter(rateLimit)
 		if err != nil {
 			logger.Error().Err(err).Msg("could not get rate limiter")
