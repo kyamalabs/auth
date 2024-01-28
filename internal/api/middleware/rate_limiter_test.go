@@ -32,9 +32,9 @@ func TestInitializeLimiters(t *testing.T) {
 		{
 			name: "with additional endpoint rate limits",
 			rateLimits: map[string]rate{
-				defaultRateLimitIdentifier: {Limit: 1000, Period: time.Hour, Identifier: defaultRateLimitIdentifier},
-				"/pb.Auth/GetChallenge":    {Limit: 100, Period: time.Hour, Identifier: "gRPC Challenge"},
-				"/auth/accounts/challenge": {Limit: 100, Period: time.Hour, Identifier: "HTTP Challenge"},
+				defaultRateLimitIdentifier:     {Limit: 1000, Period: time.Hour, Identifier: defaultRateLimitIdentifier},
+				"/pb.Auth/GetChallenge":        {Limit: 100, Period: time.Hour, Identifier: "gRPC Challenge"},
+				"GET:/auth/accounts/challenge": {Limit: 100, Period: time.Hour, Identifier: "HTTP Challenge"},
 			},
 			expectedNumLimiters: 3,
 		},
@@ -78,10 +78,10 @@ func TestGetEndpointRateLimit(t *testing.T) {
 		},
 		{
 			name:     "has a specific rate limit",
-			endpoint: "/test",
+			endpoint: "GET:/test",
 			rateLimits: map[string]rate{
 				defaultRateLimitIdentifier: defaultRateLimit,
-				"/test":                    testRateLimit,
+				"GET:/test":                testRateLimit,
 			},
 			expectedRateLimit: testRateLimit,
 		},
