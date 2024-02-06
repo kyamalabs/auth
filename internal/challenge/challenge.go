@@ -48,11 +48,11 @@ func FetchChallenge(ctx context.Context, c cache.Cache, walletAddress string) (s
 	cacheKey := fmt.Sprintf("%s:%s", cacheKeyPrefix, walletAddress)
 
 	res, err := c.Get(ctx, cacheKey)
+	if err != nil {
+		return "", fmt.Errorf("could not fetch challenge from cache: %w", err)
+	}
 	if res == nil {
 		return "", fmt.Errorf("challenge not present in cache")
-	}
-	if err != nil {
-		return "", fmt.Errorf("could not fetch challenge from cache: %s", res)
 	}
 
 	cachedChallenge, ok := res.(string)
