@@ -74,8 +74,8 @@ github.com/docker/go-units v0.5.0 h1:69rxXcBk27SvSaaxTtLh/8llcHD8vYHT7WSdRZ/jvr4
 github.com/docker/go-units v0.5.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
 github.com/ethereum/c-kzg-4844 v0.4.0 h1:3MS1s4JtA868KpJxroZoepdV0ZKBp3u/O5HcZ7R3nlY=
 github.com/ethereum/c-kzg-4844 v0.4.0/go.mod h1:VewdlzQmpT5QSrVhbBuGoCdFJkpaJlO1aQputP83wc0=
-github.com/ethereum/go-ethereum v1.13.11 h1:b51Dsm+rEg7anFRUMGB8hODXHvNfcRKzz9vcj8wSdUs=
-github.com/ethereum/go-ethereum v1.13.11/go.mod h1:gFtlVORuUcT+UUIcJ/veCNjkuOSujCi338uSHJrYAew=
+github.com/ethereum/go-ethereum v1.13.12 h1:iDr9UM2JWkngBHGovRJEQn4Kor7mT4gt9rUZqB5M29Y=
+github.com/ethereum/go-ethereum v1.13.12/go.mod h1:hKL2Qcj1OvStXNSEDbucexqnEt1Wh4Cz329XsjAalZY=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
 github.com/frankban/quicktest v1.14.6/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7zb5vbUoiM6w0=
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
