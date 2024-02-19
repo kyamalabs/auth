@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/kyamalabs/auth/compare/v0.2.0...v0.2.1) (2024-02-19)
+
+
+### Bug Fixes
+
+* allow creation of multiple rate limiters of same HTTP path but different methods ([#38](https://github.com/kyamalabs/auth/issues/38)) ([60a0e97](https://github.com/kyamalabs/auth/commit/60a0e9740c2963a49353bc61758ef19565c1bd61))
+* emit default values http server ([#48](https://github.com/kyamalabs/auth/issues/48)) ([795bb40](https://github.com/kyamalabs/auth/commit/795bb405e3e0fca891630a2d8d963a8a78fb02f2))
+* surface fetch challenge cache get error ([#49](https://github.com/kyamalabs/auth/issues/49)) ([44ad3eb](https://github.com/kyamalabs/auth/commit/44ad3eb831ad11cbca78f040e310c162083448f6))
+
 ## [0.2.0](https://github.com/kyamalabs/auth/compare/v0.1.1...v0.2.0) (2024-01-24)
 
 
