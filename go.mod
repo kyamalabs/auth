@@ -14,7 +14,7 @@ require (
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/rs/zerolog v1.32.0
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/ulule/limiter/v3 v3.11.2
 	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.19.0
